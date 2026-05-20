@@ -29,3 +29,6 @@ Construir uma plataforma capaz de:
 - Frontend
 - Backend
 - DevOps / Produto / QA
+
+main = versão estável/final
+develop = onde o time integra o trabalho
