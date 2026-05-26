@@ -30,6 +30,11 @@ src/
 
 ## Como rodar
 
+### Pré-requisitos
+
+- Node.js
+- Git
+
 ```bash
 cd frontend
 npm install
@@ -55,3 +60,4 @@ Abra [http://localhost:3000](http://localhost:3000).
 ## Branch
 
 Trabalhar em `develop` (ou `feature/*` → PR para `develop`). Não commitar direto na `main`.
+
