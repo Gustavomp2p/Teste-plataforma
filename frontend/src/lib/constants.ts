@@ -6,9 +6,11 @@ export const SITE = {
 } as const;
 
 export const NAV_LINKS = [
-  { href: "#problema", label: "O problema" },
-  { href: "#solucao", label: "Solução" },
   { href: "#fluxo", label: "Como funciona" },
+  { href: "#solucao", label: "Soluções" },
+  { href: "#beneficios", label: "Benefícios" },
+  { href: "#visao", label: "Sobre" },
+  { href: "#cadastro", label: "Contato" },
 ] as const;
 
 export const DASHBOARD_NAV = [
