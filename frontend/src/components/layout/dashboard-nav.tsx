@@ -11,7 +11,7 @@ const icons: Record<string, string> = {
   inbox: "◎",
 };
 
-export function DashboardNav() {
+export function DashboardNav({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname();
 
   return (
@@ -46,8 +46,18 @@ export function DashboardNav() {
           );
         })}
       </nav>
-      <div className="border-t border-slate-200 p-4 text-xs text-slate-400">
-        Sprint 1 · layout base
+      <div className="border-t border-slate-200 p-4">
+        {userEmail ? (
+          <p className="truncate text-xs text-slate-500" title={userEmail}>
+            {userEmail}
+          </p>
+        ) : null}
+        <Link
+          href="/auth/signout"
+          className="mt-2 inline-block text-xs font-medium text-brand-600 hover:text-brand-500"
+        >
+          Sair
+        </Link>
       </div>
     </aside>
   );

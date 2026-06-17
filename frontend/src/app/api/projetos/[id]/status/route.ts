@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ApiError, atualizarStatusProjeto, type StatusProjeto } from "@/lib/api";
+import { ApiError, atualizarStatusProjeto, type StatusProjeto } from "@/lib/api-server";
 import { STATUS_OPTIONS } from "@/lib/status";
 
 /** Atualiza o status de um projeto (usado pelo painel/dashboard). */
@@ -23,7 +23,7 @@ export async function PATCH(
 
   if (!STATUS_OPTIONS.includes(status as StatusProjeto)) {
     return NextResponse.json(
-      { message: "Status inválido. Use: aberto, em_andamento ou concluido." },
+      { message: "Status inválido. Use: novo, em_analise, em_contato, aprovado_turma, reprovado ou estruturado." },
       { status: 400 },
     );
   }

@@ -1,12 +1,16 @@
 /**
- * Cliente de acesso à API FastAPI do backend.
- *
- * Estas funções rodam apenas no servidor (Server Components e Route Handlers),
- * por isso a URL do backend fica em `process.env.API_URL` e nunca é exposta ao
- * navegador.
+ * Cliente de acesso à API FastAPI do backend (server-side only).
  */
 
-export type StatusProjeto = "aberto" | "em_andamento" | "concluido";
+export type StatusProjeto =
+  | "novo"
+  | "em_analise"
+  | "em_contato"
+  | "aprovado_turma"
+  | "reprovado"
+  | "estruturado";
+
+export type Nivel = "baixa" | "media" | "alta";
 
 export type Empresa = {
   id: number;
@@ -14,8 +18,19 @@ export type Empresa = {
   cnpj: string;
   email: string;
   telefone: string | null;
+  responsavel_nome: string | null;
+  cidade: string | null;
+  segmento: string | null;
+  aceita_contato: boolean;
   descricao: string | null;
   criado_em: string;
+};
+
+export type Categoria = {
+  id: number;
+  nome: string;
+  slug: string;
+  descricao: string | null;
 };
 
 export type Projeto = {
@@ -23,9 +38,29 @@ export type Projeto = {
   titulo: string;
   descricao: string;
   tecnologias: string | null;
-  status: StatusProjeto;
+  tipo_problema: string | null;
+  urgencia: Nivel | string | null;
+  status: StatusProjeto | string;
+  complexidade: Nivel | string | null;
+  prioridade: Nivel | string | null;
+  observacoes_internas: string | null;
+  briefing_contexto: string | null;
+  briefing_objetivo: string | null;
+  briefing_escopo: string | null;
+  briefing_requisitos: string | null;
+  briefing_resultado: string | null;
+  categoria_id: number | null;
   empresa_id: number;
   criado_em: string;
+  atualizado_em: string | null;
+};
+
+export type ProjetoDetalhe = Projeto & {
+  empresa?: Pick<
+    Empresa,
+    "id" | "nome" | "email" | "telefone" | "responsavel_nome" | "cidade" | "segmento"
+  >;
+  categoria?: Categoria | null;
 };
 
 export type EmpresaInput = {
@@ -33,6 +68,10 @@ export type EmpresaInput = {
   cnpj: string;
   email: string;
   telefone?: string | null;
+  responsavel_nome?: string | null;
+  cidade?: string | null;
+  segmento?: string | null;
+  aceita_contato?: boolean;
   descricao?: string | null;
 };
 
@@ -40,13 +79,37 @@ export type ProjetoInput = {
   titulo: string;
   descricao: string;
   tecnologias?: string | null;
+  tipo_problema?: string | null;
+  urgencia?: Nivel | null;
+  categoria_id?: number | null;
   empresa_id: number;
+};
+
+export type ProjetoUpdateInput = {
+  status?: StatusProjeto;
+  complexidade?: Nivel | null;
+  prioridade?: Nivel | null;
+  observacoes_internas?: string | null;
+  briefing_contexto?: string | null;
+  briefing_objetivo?: string | null;
+  briefing_escopo?: string | null;
+  briefing_requisitos?: string | null;
+  briefing_resultado?: string | null;
+  categoria_id?: number | null;
+};
+
+export type ProjetoFiltros = {
+  status?: string;
+  cidade?: string;
+  segmento?: string;
+  complexidade?: string;
+  skip?: number;
+  limit?: number;
 };
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 const API_KEY = process.env.API_KEY;
 
-/** Erro de API com a mensagem (em português, quando possível) vinda do backend. */
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -59,109 +122,96 @@ export class ApiError extends Error {
 type RequestOptions = {
   method?: string;
   body?: unknown;
-  /** Por padrão não usa cache para refletir os dados mais recentes do banco. */
   cache?: RequestCache;
   searchParams?: Record<string, string>;
-  /** Quando true, envia o header X-API-Key (rotas do painel). */
   auth?: boolean;
+  accessToken?: string | null;
 };
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body, cache = "no-store", searchParams, auth = false } = options;
+  const { method = "GET", body, cache = "no-store", searchParams, auth = false, accessToken } = options;
 
   const url = new URL(path, API_URL);
   if (searchParams) {
     for (const [key, value] of Object.entries(searchParams)) {
-      url.searchParams.set(key, value);
+      if (value) url.searchParams.set(key, value);
     }
   }
 
   const headers: Record<string, string> = {};
   if (body) headers["Content-Type"] = "application/json";
   if (auth) {
-    if (!API_KEY) {
-      throw new ApiError(
-        "API_KEY não configurada no frontend (defina em .env.local).",
-        500,
-      );
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    } else if (API_KEY) {
+      headers["X-API-Key"] = API_KEY;
+    } else {
+      throw new ApiError("Sessão expirada ou API_KEY não configurada.", 401);
     }
-    headers["X-API-Key"] = API_KEY;
   }
 
   let res: Response;
   try {
-    res = await fetch(url, {
-      method,
-      cache,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    res = await fetch(url, { method, cache, headers, body: body ? JSON.stringify(body) : undefined });
   } catch {
-    throw new ApiError(
-      "Não foi possível conectar à API. Verifique se o backend está rodando.",
-      503,
-    );
+    throw new ApiError("Não foi possível conectar à API. Verifique se o backend está rodando.", 503);
   }
 
   if (!res.ok) {
     let detail = `Erro ${res.status} ao acessar a API.`;
     try {
       const data = await res.json();
-      if (typeof data?.detail === "string") {
-        detail = data.detail;
-      } else if (Array.isArray(data?.detail) && data.detail[0]?.msg) {
-        detail = data.detail[0].msg;
-      }
+      if (typeof data?.detail === "string") detail = data.detail;
     } catch {
-      // resposta sem corpo JSON — mantém a mensagem padrão
+      /* ignore */
     }
     throw new ApiError(detail, res.status);
   }
 
-  if (res.status === 204) {
-    return undefined as T;
-  }
-
+  if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }
 
-// ---------------------------------------------------------------------------
-// Empresas
-// ---------------------------------------------------------------------------
-
-export function listarEmpresas() {
-  return request<Empresa[]>("/empresas/", { auth: true });
-}
-
-export function buscarEmpresa(id: number) {
-  return request<Empresa>(`/empresas/${id}`, { auth: true });
+export function listarEmpresas(accessToken?: string | null) {
+  return request<Empresa[]>("/empresas/", { auth: true, accessToken });
 }
 
 export function criarEmpresa(data: EmpresaInput) {
   return request<Empresa>("/empresas/", { method: "POST", body: data });
 }
 
-// ---------------------------------------------------------------------------
-// Projetos
-// ---------------------------------------------------------------------------
-
-export function listarProjetos() {
-  return request<Projeto[]>("/projetos/", { auth: true });
+export function listarCategorias(accessToken?: string | null) {
+  return request<Categoria[]>("/categorias/", { auth: true, accessToken });
 }
 
-export function buscarProjeto(id: number) {
-  return request<Projeto>(`/projetos/${id}`, { auth: true });
+export function listarProjetos(filtros: ProjetoFiltros = {}, accessToken?: string | null) {
+  const searchParams: Record<string, string> = {};
+  if (filtros.status) searchParams.status = filtros.status;
+  if (filtros.cidade) searchParams.cidade = filtros.cidade;
+  if (filtros.segmento) searchParams.segmento = filtros.segmento;
+  if (filtros.complexidade) searchParams.complexidade = filtros.complexidade;
+  if (filtros.skip != null) searchParams.skip = String(filtros.skip);
+  if (filtros.limit != null) searchParams.limit = String(filtros.limit);
+  return request<Projeto[]>("/projetos/", { auth: true, searchParams, accessToken });
+}
+
+export function buscarProjeto(id: number, accessToken?: string | null) {
+  return request<ProjetoDetalhe>(`/projetos/${id}`, { auth: true, accessToken });
 }
 
 export function criarProjeto(data: ProjetoInput) {
   return request<Projeto>("/projetos/", { method: "POST", body: data });
 }
 
-export function atualizarStatusProjeto(id: number, status: StatusProjeto) {
-  // O backend recebe o status como query param em PATCH /projetos/{id}/status.
+export function atualizarStatusProjeto(id: number, status: StatusProjeto, accessToken?: string | null) {
   return request<Projeto>(`/projetos/${id}/status`, {
     method: "PATCH",
     searchParams: { status },
     auth: true,
+    accessToken,
   });
+}
+
+export function atualizarProjeto(id: number, data: ProjetoUpdateInput, accessToken?: string | null) {
+  return request<Projeto>(`/projetos/${id}`, { method: "PATCH", body: data, auth: true, accessToken });
 }

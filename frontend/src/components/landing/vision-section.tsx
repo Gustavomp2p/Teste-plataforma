@@ -28,8 +28,9 @@ export function VisionSection() {
             <Image
               src={LANDING_IMAGES.parceiroHardwareDark}
               alt="Instituto Hardware BR"
-              width={180}
-              height={72}
+              width={277}
+              height={190}
+              unoptimized
               className="mt-8 h-14 w-auto object-contain opacity-90"
             />
           </div>

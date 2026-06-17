@@ -71,6 +71,7 @@ export function SiteFooter() {
               src={LANDING_IMAGES.parceiroHardwareDark}
               alt="Instituto Hardware BR"
               label="Instituto Hardware BR"
+              unoptimized
             />
           </ul>
         </div>
