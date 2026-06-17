@@ -4,6 +4,7 @@ from typing import List
 from app.database import get_db
 from app.models.empresa import Empresa
 from app.schemas.empresa import EmpresaCreate, EmpresaResponse
+from app.security import require_api_key
 
 router = APIRouter()
 
@@ -22,18 +23,18 @@ def cadastrar_empresa(empresa: EmpresaCreate, db: Session = Depends(get_db)):
     db.refresh(nova_empresa)
     return nova_empresa
 
-@router.get("/", response_model=List[EmpresaResponse])
+@router.get("/", response_model=List[EmpresaResponse], dependencies=[Depends(require_api_key)])
 def listar_empresas(db: Session = Depends(get_db)):
     return db.query(Empresa).all()
 
-@router.get("/{empresa_id}", response_model=EmpresaResponse)
+@router.get("/{empresa_id}", response_model=EmpresaResponse, dependencies=[Depends(require_api_key)])
 def buscar_empresa(empresa_id: int, db: Session = Depends(get_db)):
     empresa = db.query(Empresa).filter(Empresa.id == empresa_id).first()
     if not empresa:
         raise HTTPException(status_code=404, detail="Empresa não encontrada.")
     return empresa
 
-@router.delete("/{empresa_id}", status_code=204)
+@router.delete("/{empresa_id}", status_code=204, dependencies=[Depends(require_api_key)])
 def deletar_empresa(empresa_id: int, db: Session = Depends(get_db)):
     empresa = db.query(Empresa).filter(Empresa.id == empresa_id).first()
     if not empresa:

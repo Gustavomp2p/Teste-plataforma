@@ -43,12 +43,15 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Edite o `.env` com a URL de conexão do Supabase (Session Pooler):
+Edite o `.env` com a URL de conexão do Supabase (Session Pooler) e a chave do painel:
 ```env
 DATABASE_URL=postgresql://postgres.SEU_PROJECT_REF:SUA_SENHA@aws-1-sa-east-1.pooler.supabase.com:5432/postgres
+API_KEY=chave_longa_aleatoria_min_32_chars
+CORS_ORIGINS=http://localhost:3000
 ```
 
 > A URL pode ser encontrada em: Supabase → Project Settings → Database → Connection string (Session Pooler)
+> `API_KEY` deve ser a mesma configurada no frontend (`frontend/.env.local`).
 
 ### 5. Rode a API
 ```bash
@@ -65,23 +68,37 @@ Com a API rodando, acesse:
 
 ---
 
+## Autenticação
+
+As rotas do **painel** exigem o header `X-API-Key` igual ao `API_KEY` do `.env`.
+As rotas **públicas** (cadastro pela landing) não exigem chave.
+
+```http
+X-API-Key: <mesma chave do .env>
+```
+
 ## Endpoints disponíveis
 
 ### Empresas
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | /empresas/ | Cadastrar empresa |
-| GET | /empresas/ | Listar todas |
-| GET | /empresas/{id} | Buscar por ID |
-| DELETE | /empresas/{id} | Deletar empresa |
+| Método | Rota | Acesso | Descrição |
+|--------|------|--------|-----------|
+| POST | /empresas/ | Público | Cadastrar empresa |
+| GET | /empresas/ | Painel (X-API-Key) | Listar todas |
+| GET | /empresas/{id} | Painel (X-API-Key) | Buscar por ID |
+| DELETE | /empresas/{id} | Painel (X-API-Key) | Deletar empresa |
 
 ### Projetos
+| Método | Rota | Acesso | Descrição |
+|--------|------|--------|-----------|
+| POST | /projetos/ | Público | Cadastrar projeto |
+| GET | /projetos/ | Painel (X-API-Key) | Listar todos |
+| GET | /projetos/{id} | Painel (X-API-Key) | Buscar por ID |
+| PATCH | /projetos/{id}/status | Painel (X-API-Key) | Atualizar status (status como query param) |
+
+### Saúde
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| POST | /projetos/ | Cadastrar projeto |
-| GET | /projetos/ | Listar todos |
-| GET | /projetos/{id} | Buscar por ID |
-| PATCH | /projetos/{id}/status | Atualizar status |
+| GET | /health | Healthcheck |
 
 ---
 
@@ -92,6 +109,7 @@ backend/
 ├── app/
 │   ├── main.py          # Ponto de entrada da API
 │   ├── database.py      # Conexão com Supabase
+│   ├── security.py      # Autenticação por X-API-Key (painel)
 │   ├── models/          # Tabelas do banco (SQLAlchemy)
 │   │   ├── empresa.py
 │   │   └── projeto.py

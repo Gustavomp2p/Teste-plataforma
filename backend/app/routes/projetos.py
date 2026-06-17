@@ -5,6 +5,7 @@ from app.database import get_db
 from app.models.projeto import Projeto
 from app.models.empresa import Empresa
 from app.schemas.projeto import ProjetoCreate, ProjetoResponse
+from app.security import require_api_key
 
 router = APIRouter()
 
@@ -21,18 +22,18 @@ def cadastrar_projeto(projeto: ProjetoCreate, db: Session = Depends(get_db)):
     db.refresh(novo_projeto)
     return novo_projeto
 
-@router.get("/", response_model=List[ProjetoResponse])
+@router.get("/", response_model=List[ProjetoResponse], dependencies=[Depends(require_api_key)])
 def listar_projetos(db: Session = Depends(get_db)):
     return db.query(Projeto).all()
 
-@router.get("/{projeto_id}", response_model=ProjetoResponse)
+@router.get("/{projeto_id}", response_model=ProjetoResponse, dependencies=[Depends(require_api_key)])
 def buscar_projeto(projeto_id: int, db: Session = Depends(get_db)):
     projeto = db.query(Projeto).filter(Projeto.id == projeto_id).first()
     if not projeto:
         raise HTTPException(status_code=404, detail="Projeto não encontrado.")
     return projeto
 
-@router.patch("/{projeto_id}/status")
+@router.patch("/{projeto_id}/status", dependencies=[Depends(require_api_key)])
 def atualizar_status(projeto_id: int, status: str, db: Session = Depends(get_db)):
     projeto = db.query(Projeto).filter(Projeto.id == projeto_id).first()
     if not projeto:
