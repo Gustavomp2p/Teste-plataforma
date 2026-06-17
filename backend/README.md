@@ -58,6 +58,22 @@ CORS_ORIGINS=http://localhost:3000
 uvicorn app.main:app --reload
 ```
 
+### 6. Aplique o schema no Supabase (obrigatório após atualização do modelo)
+
+**Opção A — Script (sem MCP Cursor):**
+
+Com `DATABASE_URL` configurado no `.env` (senha real, não placeholder):
+
+```bash
+python scripts/apply_migration.py
+```
+
+**Opção B — SQL Editor manual:**
+
+No [SQL Editor do projeto](https://supabase.com/dashboard/project/eexyhqvpgbdkzjtfraaw/sql/new), execute o arquivo `migrations/001_schema_bfd.sql`.
+
+Detalhes do modelo: `docs/MODELO-DADOS.md` · Troubleshooting MCP: `docs/SUPABASE-SETUP.md`
+
 ---
 
 ## Documentação interativa
@@ -91,9 +107,15 @@ X-API-Key: <mesma chave do .env>
 | Método | Rota | Acesso | Descrição |
 |--------|------|--------|-----------|
 | POST | /projetos/ | Público | Cadastrar projeto |
-| GET | /projetos/ | Painel (X-API-Key) | Listar todos |
-| GET | /projetos/{id} | Painel (X-API-Key) | Buscar por ID |
-| PATCH | /projetos/{id}/status | Painel (X-API-Key) | Atualizar status (status como query param) |
+| GET | /projetos/ | Painel (X-API-Key) | Listar (filtros: status, cidade, segmento, complexidade) |
+| GET | /projetos/{id} | Painel (X-API-Key) | Detalhe com empresa e categoria |
+| PATCH | /projetos/{id} | Painel (X-API-Key) | Qualificação e briefing |
+| PATCH | /projetos/{id}/status | Painel (X-API-Key) | Atualizar status |
+
+### Categorias
+| Método | Rota | Acesso | Descrição |
+|--------|------|--------|-----------|
+| GET | /categorias/ | Painel (X-API-Key) | Listar categorias |
 
 ### Saúde
 | Método | Rota | Descrição |
@@ -119,6 +141,9 @@ backend/
 │   └── routes/          # Endpoints da API
 │       ├── empresas.py
 │       └── projetos.py
+├── migrations/          # SQL do schema (001_schema_bfd.sql)
+├── scripts/
+│   └── apply_migration.py
 ├── .env.example
 ├── .gitignore
 ├── requirements.txt
