@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/constants";
+import { allowPublicSignup, mapAuthError } from "@/lib/auth-errors";
 import { createClient } from "@/lib/supabase/client";
 
 type Mode = "login" | "signup";
@@ -31,10 +32,16 @@ export function LoginForm() {
     setMessage(null);
     setSuccess(null);
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+      setMessage("Supabase não configurado. Defina NEXT_PUBLIC_SUPABASE_* no .env.local.");
+      setLoading(false);
+      return;
+    }
+
     const supabase = createClient();
 
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -44,17 +51,24 @@ export function LoginForm() {
       });
       setLoading(false);
       if (error) {
-        setMessage(error.message);
+        setMessage(mapAuthError(error.message));
         return;
       }
-      setSuccess("Enviamos um link de confirmação para seu e-mail. Confirme antes de entrar.");
+      if (data.session) {
+        router.push(redirect);
+        router.refresh();
+        return;
+      }
+      setSuccess(
+        "Conta criada. Se a confirmação de e-mail estiver ativa no Supabase, confira sua caixa de entrada.",
+      );
       return;
     }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      setMessage(error.message);
+      setMessage(mapAuthError(error.message));
       return;
     }
 
@@ -72,29 +86,31 @@ export function LoginForm() {
           <p className="mt-2 text-sm text-slate-500">Acesso ao painel administrativo</p>
         </div>
 
-        <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
-          <button
-            type="button"
-            onClick={() => setMode("login")}
-            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-              mode === "login" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-            }`}
-          >
-            Entrar
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("signup")}
-            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-              mode === "signup" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-            }`}
-          >
-            Criar conta
-          </button>
-        </div>
+        {allowPublicSignup ? (
+          <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
+            <button
+              type="button"
+              onClick={() => setMode("login")}
+              className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+                mode === "login" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              }`}
+            >
+              Entrar
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("signup")}
+              className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+                mode === "signup" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              }`}
+            >
+              Criar conta
+            </button>
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === "signup" && (
+          {mode === "signup" && allowPublicSignup && (
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Nome</label>
               <input
@@ -143,7 +159,9 @@ export function LoginForm() {
         </form>
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Após criar a conta, um administrador deve vincular seu perfil e categorias no sistema.
+          {allowPublicSignup
+            ? "Após criar a conta, um administrador deve vincular seu perfil no sistema."
+            : "Acesso restrito. Contas são criadas pelo administrador no Supabase."}
         </p>
       </div>
     </div>

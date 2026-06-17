@@ -7,6 +7,7 @@ import httpx
 from fastapi import Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 
+from app.auth.supabase_config import get_supabase_url
 from app.database import get_db
 from app.models.usuario_admin import UsuarioAdmin
 from app.security import require_api_key_legacy
@@ -27,7 +28,7 @@ class AdminContext:
 
 
 def _verify_supabase_jwt(token: str) -> dict:
-    supabase_url = os.getenv("SUPABASE_URL", "").rstrip("/")
+    supabase_url = get_supabase_url()
     anon_key = os.getenv("SUPABASE_ANON_KEY", "")
     if not supabase_url or not anon_key:
         raise HTTPException(
@@ -51,7 +52,8 @@ def _verify_supabase_jwt(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Sessão inválida ou expirada.")
 
     data = res.json()
-    if not data.get("email_confirmed_at"):
+    require_confirm = os.getenv("AUTH_REQUIRE_EMAIL_CONFIRM", "true").lower() in ("1", "true", "yes")
+    if require_confirm and not data.get("email_confirmed_at"):
         raise HTTPException(status_code=403, detail="Confirme seu e-mail antes de acessar o painel.")
     return data
 

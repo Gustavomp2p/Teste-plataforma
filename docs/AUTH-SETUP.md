@@ -61,13 +61,17 @@ SUPABASE_URL=https://eexyhqvpgbdkzjtfraaw.supabase.co
 SUPABASE_ANON_KEY=sua_publishable_key
 ```
 
+> **Importante:** `SUPABASE_URL` é a URL **base** do projeto. **Não** use `/rest/v1` no final — isso quebra a validação JWT (`/auth/v1/user`).
+
 **frontend/.env.local**
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://eexyhqvpgbdkzjtfraaw.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sua_publishable_key
-API_URL=http://localhost:8000
+NEXT_PUBLIC_ALLOW_SIGNUP=false
 ```
+
+Deploy: ver `docs/DEPLOY.md` (Vercel + Render).
 
 ## 5. Fluxo
 
