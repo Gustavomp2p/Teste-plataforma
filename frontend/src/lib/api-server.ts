@@ -5,6 +5,8 @@ import {
   listarEmpresas as listarEmpresasBase,
   listarProjetos as listarProjetosBase,
   buscarProjeto as buscarProjetoBase,
+  buscarPerfil as buscarPerfilBase,
+  sincronizarPerfil as sincronizarPerfilBase,
   atualizarProjeto as atualizarProjetoBase,
   atualizarStatusProjeto as atualizarStatusProjetoBase,
   type ProjetoFiltros,
@@ -38,6 +40,14 @@ export async function atualizarProjeto(id: number, data: ProjetoUpdateInput) {
 
 export async function atualizarStatusProjeto(id: number, status: StatusProjeto) {
   return atualizarStatusProjetoBase(id, status, await token());
+}
+
+export async function buscarPerfil() {
+  return buscarPerfilBase(await token());
+}
+
+export async function sincronizarPerfil() {
+  return sincronizarPerfilBase(await token());
 }
 
 export { ApiError };

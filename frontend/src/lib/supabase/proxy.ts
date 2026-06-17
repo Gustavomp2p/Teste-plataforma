@@ -27,12 +27,11 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
   const pathname = request.nextUrl.pathname;
 
-  const isDashboard = pathname.startsWith("/dashboard");
-  const isAuthRoute =
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/auth/");
+  const isProtected =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/conta");
+  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/auth/");
 
-  if (isDashboard && !user) {
+  if (isProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", pathname);
@@ -41,7 +40,7 @@ export async function updateSession(request: NextRequest) {
 
   if (isAuthRoute && user && pathname === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/conta";
     return NextResponse.redirect(url);
   }
 

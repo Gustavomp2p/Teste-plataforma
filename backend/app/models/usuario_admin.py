@@ -5,8 +5,11 @@ from sqlalchemy.sql import func
 from app.database import Base
 from app.models.admin_categoria import admin_categorias
 
+PAPEIS_ADMIN = frozenset({"super_admin", "coordenador", "analista"})
+
 
 class PapelAdmin:
+    USUARIO = "usuario"
     SUPER = "super_admin"
     COORDENADOR = "coordenador"
     ANALISTA = "analista"
@@ -19,11 +22,15 @@ class UsuarioAdmin(Base):
     nome = Column(String(150), nullable=False)
     email = Column(String(150), unique=True, nullable=False)
     auth_user_id = Column(UUID(as_uuid=True), unique=True, nullable=True)
-    papel = Column(String(30), default=PapelAdmin.ANALISTA, nullable=False)
+    papel = Column(String(30), default=PapelAdmin.USUARIO, nullable=False)
     ativo = Column(Boolean, default=True, nullable=False)
     criado_em = Column(DateTime(timezone=True), server_default=func.now())
 
     categorias = relationship("Categoria", secondary=admin_categorias, lazy="joined")
+
+    @property
+    def is_admin(self) -> bool:
+        return self.papel in PAPEIS_ADMIN
 
     def pode_ver_todos_projetos(self) -> bool:
         return self.papel in (PapelAdmin.SUPER, PapelAdmin.COORDENADOR)

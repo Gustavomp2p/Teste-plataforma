@@ -28,4 +28,4 @@ export function mapAuthError(message: string): string {
 }
 
 export const allowPublicSignup =
-  process.env.NEXT_PUBLIC_ALLOW_SIGNUP === "true";
+  process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== "false";

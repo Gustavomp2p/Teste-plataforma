@@ -16,7 +16,7 @@ def main() -> int:
     parser.add_argument("--auth-user-id", required=True, help="UUID de auth.users (Supabase Dashboard → Auth → Users)")
     parser.add_argument(
         "--papel",
-        choices=["super_admin", "coordenador", "analista"],
+        choices=["super_admin", "coordenador", "analista", "usuario"],
         default="super_admin",
     )
     parser.add_argument(

@@ -53,8 +53,14 @@ export function DashboardNav({ userEmail }: { userEmail?: string }) {
           </p>
         ) : null}
         <Link
+          href="/conta"
+          className="mt-2 block text-xs font-medium text-slate-500 hover:text-brand-600"
+        >
+          Minha conta
+        </Link>
+        <Link
           href="/auth/signout"
-          className="mt-2 inline-block text-xs font-medium text-brand-600 hover:text-brand-500"
+          className="mt-1 inline-block text-xs font-medium text-brand-600 hover:text-brand-500"
         >
           Sair
         </Link>

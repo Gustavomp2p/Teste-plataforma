@@ -215,3 +215,25 @@ export function atualizarStatusProjeto(id: number, status: StatusProjeto, access
 export function atualizarProjeto(id: number, data: ProjetoUpdateInput, accessToken?: string | null) {
   return request<Projeto>(`/projetos/${id}`, { method: "PATCH", body: data, auth: true, accessToken });
 }
+
+export type PerfilResponse = {
+  id: number;
+  nome: string;
+  email: string;
+  papel: string;
+  is_admin: boolean;
+  escopo_total: boolean;
+  painel_url: string;
+  categorias: { id: number; nome: string; slug: string }[];
+};
+
+export function buscarPerfil(accessToken?: string | null) {
+  return request<PerfilResponse>("/auth/me", { auth: true, accessToken });
+}
+
+export function sincronizarPerfil(accessToken?: string | null) {
+  return request<{ ok: boolean; painel_url: string; is_admin: boolean; papel: string }>(
+    "/auth/sync-profile",
+    { method: "POST", auth: true, accessToken },
+  );
+}

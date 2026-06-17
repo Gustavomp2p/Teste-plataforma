@@ -31,7 +31,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <ButtonLink href="/dashboard" variant="ghost" className="hidden px-3 sm:inline-flex">
+          <ButtonLink href="/login" variant="ghost" className="hidden px-3 sm:inline-flex">
             Entrar
           </ButtonLink>
           <ButtonLink href="#cadastro" className="px-3 text-xs sm:px-5 sm:text-sm">
