@@ -9,6 +9,8 @@ import {
   sincronizarPerfil as sincronizarPerfilBase,
   atualizarProjeto as atualizarProjetoBase,
   atualizarStatusProjeto as atualizarStatusProjetoBase,
+  listarProjetosEmpresa as listarProjetosEmpresaBase,
+  buscarEmpresaVinculada as buscarEmpresaVinculadaBase,
   type ProjetoFiltros,
   type ProjetoUpdateInput,
   type StatusProjeto,
@@ -48,6 +50,14 @@ export async function buscarPerfil() {
 
 export async function sincronizarPerfil() {
   return sincronizarPerfilBase(await token());
+}
+
+export async function listarProjetosEmpresa() {
+  return listarProjetosEmpresaBase(await token());
+}
+
+export async function buscarEmpresaVinculada() {
+  return buscarEmpresaVinculadaBase(await token());
 }
 
 export { ApiError };

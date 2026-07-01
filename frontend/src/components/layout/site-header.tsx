@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NAV_LINKS, SITE } from "@/lib/constants";
 import { ButtonLink } from "@/components/ui/button";
+import { AuthNav } from "@/components/layout/auth-nav";
 
 export function SiteHeader() {
   return (
@@ -31,9 +32,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <ButtonLink href="/login" variant="ghost" className="hidden px-3 sm:inline-flex">
-            Entrar
-          </ButtonLink>
+          <AuthNav />
           <ButtonLink href="#cadastro" className="px-3 text-xs sm:px-5 sm:text-sm">
             Cadastrar desafio
           </ButtonLink>

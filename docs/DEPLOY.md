@@ -14,45 +14,41 @@ Integração com **GitHub**: conecte o repositório `conectaecapacita/plataforma
 
 ## 1. Vercel (frontend)
 
-1. [vercel.com](https://vercel.com) → **Add New Project** → importe o repo do GitHub
+1. [vercel.com](https://vercel.com) → importe o repo `conectaecapacita/plataforma-projetos-bfd`
 2. **Root Directory:** `frontend`
-3. Framework: Next.js (detectado automaticamente)
-4. **Environment Variables:**
+3. **Environment Variables:**
 
 | Variável | Valor |
 |----------|-------|
-| `API_URL` | URL do backend no Render (ex: `https://plataforma-bfd-api.onrender.com`) |
-| `API_KEY` | Mesma do backend |
+| `API_URL` | URL do backend no Render (ex: `https://plataforma-bfd-api.onrender.com`) — **sem barra no final** |
+| `API_KEY` | Mesma do backend (somente ASCII, sem espacos) |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://eexyhqvpgbdkzjtfraaw.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key do Supabase |
-| `NEXT_PUBLIC_ALLOW_SIGNUP` | `false` (recomendado) |
+| `NEXT_PUBLIC_ALLOW_SIGNUP` | `true` |
 
-5. Deploy
+4. Deploy → **Redeploy** apos alterar variaveis
 
-### Supabase — URLs de produção
-
-**Authentication → URL Configuration:**
+### Supabase — URLs de producao
 
 - **Site URL:** `https://SEU-APP.vercel.app`
 - **Redirect URLs:** `https://SEU-APP.vercel.app/auth/callback`
 
----
-
 ## 2. Render (backend)
 
-1. [render.com](https://render.com) → **New +** → **Blueprint** (ou Web Service)
-2. Conecte o repo; use o arquivo `render.yaml` na raiz
-3. Preencha secrets no painel:
+1. [render.com](https://render.com) → **Blueprint** ou Web Service
+2. **Root Directory:** `backend` (obrigatorio — senao falha `requirements.txt`)
+3. Secrets:
 
 | Variável | Exemplo |
 |----------|---------|
 | `DATABASE_URL` | Connection string Session Pooler do Supabase |
-| `API_KEY` | Chave longa (igual ao frontend) |
+| `API_KEY` | Igual ao Vercel |
 | `CORS_ORIGINS` | `https://SEU-APP.vercel.app` |
 | `SUPABASE_URL` | `https://eexyhqvpgbdkzjtfraaw.supabase.co` (**sem** `/rest/v1`) |
 | `SUPABASE_ANON_KEY` | Publishable key |
+| `PYTHON_VERSION` | `3.11.9` |
 
-4. Após deploy, copie a URL pública para `API_URL` na Vercel
+4. Apos deploy, copie a URL publica para `API_URL` na Vercel e faca **Redeploy**
 
 ---
 

@@ -16,7 +16,8 @@ export default async function DashboardLayout({
 
   try {
     const perfil = await buscarPerfil();
-    if (!perfil.is_admin) redirect("/conta");
+    if (perfil.is_empresa) redirect("/empresa");
+    if (!perfil.is_admin) redirect(perfil.painel_url);
 
     return (
       <div className="flex min-h-screen bg-slate-50">

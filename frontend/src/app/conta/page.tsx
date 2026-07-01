@@ -15,6 +15,7 @@ export default async function ContaPage() {
 
   try {
     const perfil = await buscarPerfil();
+    if (perfil.is_empresa) redirect("/empresa");
 
     return (
       <div className="min-h-screen bg-slate-50">
@@ -63,7 +64,7 @@ export default async function ContaPage() {
               <div className="rounded-xl border border-brand-200 bg-brand-50 p-6">
                 <h2 className="font-semibold text-brand-900">Painel administrativo</h2>
                 <p className="mt-2 text-sm text-brand-800/80">
-                  Gerencie projetos, empresas e qualificações.
+                  Gerencie projetos, empresas e qualificacoes.
                 </p>
                 <ButtonLink href="/dashboard" variant="primary" className="mt-4">
                   Abrir painel admin

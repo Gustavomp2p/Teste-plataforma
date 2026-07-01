@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.auth.supabase_config import get_supabase_url
 from app.database import get_db
 from app.models.usuario_admin import PAPEIS_ADMIN, PapelAdmin, UsuarioAdmin
+from app.models.empresa import Empresa
 from app.security import require_api_key_legacy
 
 
@@ -20,6 +21,7 @@ class UserContext:
     email: str
     papel: str
     auth_user_id: Optional[UUID]
+    empresa_id: Optional[int]
     categoria_ids: list[int]
 
     @property
@@ -27,8 +29,20 @@ class UserContext:
         return self.papel in PAPEIS_ADMIN
 
     @property
+    def is_empresa(self) -> bool:
+        return self.papel == PapelAdmin.EMPRESA
+
+    @property
     def escopo_total(self) -> bool:
         return self.papel in (PapelAdmin.SUPER, PapelAdmin.COORDENADOR)
+
+    @property
+    def painel_url(self) -> str:
+        if self.is_admin:
+            return "/dashboard"
+        if self.is_empresa:
+            return "/empresa"
+        return "/conta"
 
 
 AdminContext = UserContext
@@ -75,6 +89,19 @@ def _nome_from_auth(auth_user: dict) -> str:
     )
 
 
+def _papel_from_auth(auth_user: dict) -> str:
+    meta = auth_user.get("user_metadata") or {}
+    tipo = (meta.get("tipo_conta") or "").lower()
+    if tipo == "empresa":
+        return PapelAdmin.EMPRESA
+    return PapelAdmin.USUARIO
+
+
+def _vincular_empresa(db: Session, email: str) -> Optional[int]:
+    empresa = db.query(Empresa).filter(Empresa.email == email).first()
+    return empresa.id if empresa else None
+
+
 def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
     auth_id = auth_user.get("id")
     email = auth_user.get("email")
@@ -89,13 +116,23 @@ def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
     if perfil:
         if not perfil.ativo:
             raise HTTPException(status_code=403, detail="Conta desativada.")
+        if perfil.papel == PapelAdmin.EMPRESA and not perfil.empresa_id:
+            empresa_id = _vincular_empresa(db, email)
+            if empresa_id:
+                perfil.empresa_id = empresa_id
+                db.commit()
+                db.refresh(perfil)
         return perfil
+
+    papel = _papel_from_auth(auth_user)
+    empresa_id = _vincular_empresa(db, email) if papel == PapelAdmin.EMPRESA else None
 
     perfil = UsuarioAdmin(
         nome=_nome_from_auth(auth_user),
         email=email,
         auth_user_id=auth_id,
-        papel=PapelAdmin.USUARIO,
+        papel=papel,
+        empresa_id=empresa_id,
         ativo=True,
     )
     db.add(perfil)
@@ -111,6 +148,7 @@ def _to_context(perfil: UsuarioAdmin) -> UserContext:
         email=perfil.email,
         papel=perfil.papel,
         auth_user_id=perfil.auth_user_id,
+        empresa_id=perfil.empresa_id,
         categoria_ids=perfil.categoria_ids_permitidos(),
     )
 
@@ -150,8 +188,17 @@ def get_current_admin(
         email="",
         papel="super_admin",
         auth_user_id=None,
+        empresa_id=None,
         categoria_ids=[],
     )
+
+
+def get_current_empresa(
+    user: UserContext = Depends(get_current_user),
+) -> UserContext:
+    if not user.is_empresa:
+        raise HTTPException(status_code=403, detail="Acesso restrito a contas empresa.")
+    return user
 
 
 def aplicar_escopo_categorias(query, admin: UserContext, projeto_model):

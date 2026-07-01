@@ -107,8 +107,8 @@ export type ProjetoFiltros = {
   limit?: number;
 };
 
-const API_URL = process.env.API_URL ?? "http://localhost:8000";
-const API_KEY = process.env.API_KEY;
+const API_URL = (process.env.API_URL ?? "http://localhost:8000").replace(/^\uFEFF/, "").trim();
+const API_KEY = process.env.API_KEY?.replace(/^\uFEFF/, "").trim();
 
 export class ApiError extends Error {
   status: number;
@@ -222,6 +222,8 @@ export type PerfilResponse = {
   email: string;
   papel: string;
   is_admin: boolean;
+  is_empresa: boolean;
+  empresa_id: number | null;
   escopo_total: boolean;
   painel_url: string;
   categorias: { id: number; nome: string; slug: string }[];
@@ -232,8 +234,20 @@ export function buscarPerfil(accessToken?: string | null) {
 }
 
 export function sincronizarPerfil(accessToken?: string | null) {
-  return request<{ ok: boolean; painel_url: string; is_admin: boolean; papel: string }>(
+  return request<{ ok: boolean; painel_url: string; is_admin: boolean; is_empresa: boolean; papel: string }>(
     "/auth/sync-profile",
     { method: "POST", auth: true, accessToken },
   );
+}
+
+export function listarProjetosEmpresa(accessToken?: string | null) {
+  return request<Projeto[]>("/empresa/me/projetos", { auth: true, accessToken });
+}
+
+export function buscarEmpresaVinculada(accessToken?: string | null) {
+  return request<{
+    vinculada: boolean;
+    mensagem?: string;
+    empresa: Empresa | null;
+  }>("/empresa/me", { auth: true, accessToken });
 }

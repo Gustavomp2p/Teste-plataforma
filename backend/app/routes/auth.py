@@ -22,9 +22,11 @@ def perfil_usuario(user: UserContext = Depends(get_current_user), db: Session = 
         "email": user.email,
         "papel": user.papel,
         "is_admin": user.is_admin,
+        "is_empresa": user.is_empresa,
+        "empresa_id": user.empresa_id,
         "escopo_total": user.escopo_total,
         "categorias": categorias,
-        "painel_url": "/dashboard" if user.is_admin else "/conta",
+        "painel_url": user.painel_url,
     }
 
 
@@ -35,5 +37,6 @@ def sincronizar_perfil(user: UserContext = Depends(get_current_user)):
         "ok": True,
         "papel": user.papel,
         "is_admin": user.is_admin,
-        "painel_url": "/dashboard" if user.is_admin else "/conta",
+        "is_empresa": user.is_empresa,
+        "painel_url": user.painel_url,
     }

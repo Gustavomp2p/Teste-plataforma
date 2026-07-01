@@ -1,109 +1,76 @@
-# Auth Supabase — cadastro público e níveis de acesso
+# Auth Supabase — cadastro publico e niveis de acesso
 
-## Papéis
+## Papeis (3 niveis para o usuario)
 
-| Papel | Acesso |
-|-------|--------|
-| `usuario` | Padrão no cadastro; painel em `/conta` |
-| `analista` | Admin; projetos das categorias vinculadas |
-| `coordenador` | Admin; todos os projetos e empresas |
-| `super_admin` | Acesso total + gestão de admins |
+| Nivel | Papel no banco | Painel |
+|-------|----------------|--------|
+| Usuario | `usuario` | `/conta` |
+| Empresa | `empresa` | `/empresa` |
+| Admin | `super_admin`, `coordenador`, `analista` | `/dashboard` |
 
-Categorias padrão: Automação, Sistema web, App mobile, Dados e IA, Outro.
+Cadastro **Empresa**: em `/login` → Criar conta → tipo **Empresa**. O sistema vincula automaticamente se o e-mail ja existir em `empresas`.
 
 ## 1. Supabase Dashboard
 
 ### E-mail
 
 1. **Authentication → Providers → Email** — habilite
-2. Em desenvolvimento, pode desmarcar **Confirm email** para testar mais rápido
+2. **Authentication → Email Templates** — confira template de recuperacao de senha
+3. Em desenvolvimento, pode desmarcar **Confirm email** para testar mais rapido
 
-### Google e Facebook
+### Google (login social)
 
-1. **Authentication → Providers → Google** — habilite e configure Client ID / Secret (Google Cloud Console)
-2. **Authentication → Providers → Facebook** — habilite e configure App ID / Secret (Meta for Developers)
-3. Em ambos, use a mesma **Redirect URL** do Supabase (exibida na tela do provider)
+1. [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → OAuth Client ID (Web)
+2. **Authorized redirect URI**: copie de **Supabase → Authentication → Providers → Google**
+3. **Supabase → Authentication → Providers → Google** — habilite, cole Client ID e Secret
+4. Salve
 
 ### URLs
 
 **Authentication → URL Configuration**:
 
-- Site URL: `http://localhost:3000` (ou URL de produção)
+- Site URL: URL do front (ex. `https://frontend-peach-two-24.vercel.app`)
 - Redirect URLs:
   - `http://localhost:3000/auth/callback`
-  - `https://SEU-DOMINIO.vercel.app/auth/callback` (produção)
-
-### API
-
-**Settings → API** — copie URL e **Publishable key** para `.env` / `.env.local`
+  - `https://SEU-DOMINIO.vercel.app/auth/callback`
 
 ## 2. Migrations
 
-```bash
-cd backend
-python scripts/apply_migration.py   # 001 se ainda não aplicou
-# Cole e execute no SQL Editor do Supabase:
-#   migrations/002_auth_supabase.sql
-#   migrations/003_usuario_role.sql
-python scripts/verify_schema.py
-```
+Execute no SQL Editor do Supabase (na ordem):
 
-## 3. Primeiro administrador
+- `migrations/002_auth_supabase.sql`
+- `migrations/003_usuario_role.sql`
+- `migrations/004_empresa_role.sql`
 
-Usuários comuns se cadastram em `/login` (e-mail, Google ou Facebook) e entram em `/conta`.
+## 3. Promover papeis
 
-Para promover alguém a admin:
-
-1. A pessoa cria conta em `/login` (ou você cria em **Authentication → Users**)
-2. Copie o **User UID** (UUID)
-3. Vincule ou atualize o perfil:
+**Admin:**
 
 ```bash
 python scripts/seed_admin.py \
   --email admin@seudominio.com \
   --nome "Admin BFD" \
-  --auth-user-id SEU-UUID-AQUI \
+  --auth-user-id SEU-UUID \
   --papel super_admin
 ```
 
-Analista por categoria:
+**Empresa** (apos criar conta no login):
 
 ```bash
 python scripts/seed_admin.py \
-  --email analista@exemplo.com \
-  --nome "Analista Web" \
+  --email empresa@exemplo.com \
+  --nome "Empresa XYZ" \
   --auth-user-id UUID \
-  --papel analista \
-  --categorias sistema_web,automacao
+  --papel empresa
 ```
 
-## 4. Variáveis de ambiente
+## 4. Variaveis de ambiente
 
-**backend/.env**
-
-```env
-SUPABASE_URL=https://eexyhqvpgbdkzjtfraaw.supabase.co
-SUPABASE_ANON_KEY=sua_publishable_key
-```
-
-> **Importante:** `SUPABASE_URL` é a URL **base** do projeto. **Não** use `/rest/v1` no final.
-
-**frontend/.env.local**
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://eexyhqvpgbdkzjtfraaw.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sua_publishable_key
-NEXT_PUBLIC_ALLOW_SIGNUP=true
-```
-
-`NEXT_PUBLIC_ALLOW_SIGNUP=false` desliga apenas o cadastro por e-mail na UI (OAuth continua se habilitado no Supabase).
-
-Deploy: ver `docs/DEPLOY.md` (Vercel + Render).
+Ver `docs/DEPLOY.md` para Vercel (front) e Render (back).
 
 ## 5. Fluxo
 
-1. Qualquer pessoa acessa `/login` → entra ou cria conta (e-mail, Google ou Facebook)
-2. Após login, o frontend chama `/api/auth/sync` e o backend cria/atualiza o perfil com papel `usuario`
-3. Usuários comuns vão para `/conta`; admins para `/dashboard`
-4. `/dashboard/*` exige papel admin; usuários comuns são redirecionados para `/conta`
-5. Frontend envia JWT ao FastAPI (`Authorization: Bearer`); backend valida com Supabase
+1. `/login` — e-mail, Google ou recuperar senha
+2. Apos login → `/api/auth/sync` cria perfil com papel `usuario` ou `empresa`
+3. Sessao persiste em cookie — ao voltar ao site, header mostra **Ola, {nome}**
+4. JWT enviado ao FastAPI no Render (`Authorization: Bearer`)

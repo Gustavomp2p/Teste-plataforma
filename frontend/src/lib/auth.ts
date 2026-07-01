@@ -1,5 +1,6 @@
 export type PapelUsuario =
   | "usuario"
+  | "empresa"
   | "analista"
   | "coordenador"
   | "super_admin";
@@ -10,18 +11,21 @@ export type PerfilUsuario = {
   email: string;
   papel: PapelUsuario;
   is_admin: boolean;
+  is_empresa: boolean;
+  empresa_id: number | null;
   escopo_total: boolean;
   painel_url: string;
   categorias: { id: number; nome: string; slug: string }[];
 };
 
-export const PAPEL_LABEL: Record<PapelUsuario, string> = {
+export const PAPEL_LABEL: Record<string, string> = {
   usuario: "Usuário",
-  analista: "Analista",
-  coordenador: "Coordenador",
+  empresa: "Empresa",
+  analista: "Administrador",
+  coordenador: "Administrador",
   super_admin: "Administrador",
 };
 
-export function painelParaPapel(isAdmin: boolean): string {
-  return isAdmin ? "/dashboard" : "/conta";
+export function painelParaPapel(perfil: Pick<PerfilUsuario, "painel_url">): string {
+  return perfil.painel_url;
 }

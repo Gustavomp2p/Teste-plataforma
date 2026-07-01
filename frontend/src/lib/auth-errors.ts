@@ -21,7 +21,10 @@ export function mapAuthError(message: string): string {
     return "Senha inválida. Use pelo menos 8 caracteres.";
   }
   if (lower.includes("signup is disabled")) {
-    return "Cadastro público desabilitado. Peça acesso a um administrador.";
+    return "Cadastro publico desabilitado. Peça acesso a um administrador.";
+  }
+  if (lower.includes("same_password") || lower.includes("weak password")) {
+    return "Senha fraca. Use pelo menos 8 caracteres.";
   }
 
   return message;
