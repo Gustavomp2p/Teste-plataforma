@@ -34,6 +34,7 @@ Construir uma plataforma capaz de:
 
 ### Banco de dados
 
+* Supabase
 * PostgreSQL
 
 ### Infraestrutura
