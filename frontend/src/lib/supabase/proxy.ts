@@ -23,8 +23,9 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
   const isProtected =
@@ -40,10 +41,15 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (isAuthRoute && user && pathname === "/login") {
+  if (user && pathname === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/conta";
+    url.pathname = request.nextUrl.searchParams.get("redirect") || "/";
+    url.searchParams.delete("redirect");
     return NextResponse.redirect(url);
+  }
+
+  if (isAuthRoute && user && pathname.startsWith("/auth/callback")) {
+    return supabaseResponse;
   }
 
   return supabaseResponse;

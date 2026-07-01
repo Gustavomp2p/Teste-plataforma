@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/layout/dashboard-nav";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil, ApiError } from "@/lib/api-server";
 
 export const dynamic = "force-dynamic";
@@ -10,9 +10,8 @@ export default async function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (!data?.claims) redirect("/login?redirect=/dashboard");
+  const user = await getAuthUser();
+  if (!user) redirect("/login?redirect=/dashboard");
 
   try {
     const perfil = await buscarPerfil();
@@ -27,6 +26,6 @@ export default async function DashboardLayout({
     );
   } catch (err) {
     if (err instanceof ApiError && err.status === 403) redirect("/conta");
-    redirect("/login?redirect=/dashboard");
+    redirect("/");
   }
 }

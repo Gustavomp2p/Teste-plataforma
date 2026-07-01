@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil } from "@/lib/api-server";
 import { ButtonLink } from "@/components/ui/button";
 
 async function AuthNavContent() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const claims = data?.claims;
+  const user = await getAuthUser();
 
-  if (!claims) {
+  if (!user) {
     return (
       <ButtonLink href="/login" variant="ghost" className="hidden px-3 sm:inline-flex">
         Entrar
@@ -18,14 +16,17 @@ async function AuthNavContent() {
   }
 
   let painelUrl = "/conta";
-  let nome = (claims.email as string | undefined)?.split("@")[0] ?? "Conta";
+  let nome = user.email?.split("@")[0] ?? "Conta";
 
   try {
     const perfil = await buscarPerfil();
     painelUrl = perfil.painel_url;
     nome = perfil.nome;
   } catch {
-    /* backend indisponivel — ainda mostra sessao ativa */
+    const tipo = (user.user_metadata?.tipo_conta as string | undefined)?.toLowerCase();
+    if (tipo === "empresa") painelUrl = "/empresa";
+    const metaNome = user.user_metadata?.nome as string | undefined;
+    if (metaNome) nome = metaNome;
   }
 
   return (

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/server";
 import {
   buscarPerfil,
   buscarEmpresaVinculada,
@@ -16,9 +16,8 @@ import type { StatusProjeto } from "@/lib/api";
 export const dynamic = "force-dynamic";
 
 export default async function EmpresaPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (!data?.claims) redirect("/login?redirect=/empresa");
+  const user = await getAuthUser();
+  if (!user) redirect("/login?redirect=/empresa");
 
   try {
     const perfil = await buscarPerfil();

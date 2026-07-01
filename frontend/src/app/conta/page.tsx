@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil, ApiError } from "@/lib/api-server";
 import { PAPEL_LABEL, type PapelUsuario } from "@/lib/auth";
 import { SITE } from "@/lib/constants";
@@ -9,9 +9,8 @@ import { ButtonLink } from "@/components/ui/button";
 export const dynamic = "force-dynamic";
 
 export default async function ContaPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (!data?.claims) redirect("/login");
+  const user = await getAuthUser();
+  if (!user) redirect("/login?redirect=/conta");
 
   try {
     const perfil = await buscarPerfil();

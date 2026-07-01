@@ -97,7 +97,25 @@ def _papel_from_auth(auth_user: dict) -> str:
     return PapelAdmin.USUARIO
 
 
-def _vincular_empresa(db: Session, email: str) -> Optional[int]:
+def _cnpj_digits(value: str | None) -> str:
+    if not value:
+        return ""
+    return "".join(c for c in value if c.isdigit())
+
+
+def _cnpj_from_auth(auth_user: dict) -> str | None:
+    meta = auth_user.get("user_metadata") or {}
+    cnpj = meta.get("cnpj")
+    return cnpj if isinstance(cnpj, str) and cnpj.strip() else None
+
+
+def _vincular_empresa(db: Session, email: str, cnpj: str | None = None) -> Optional[int]:
+    digits = _cnpj_digits(cnpj)
+    if digits:
+        for empresa in db.query(Empresa).all():
+            if _cnpj_digits(empresa.cnpj) == digits:
+                return empresa.id
+
     empresa = db.query(Empresa).filter(Empresa.email == email).first()
     return empresa.id if empresa else None
 
@@ -117,7 +135,7 @@ def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
         if not perfil.ativo:
             raise HTTPException(status_code=403, detail="Conta desativada.")
         if perfil.papel == PapelAdmin.EMPRESA and not perfil.empresa_id:
-            empresa_id = _vincular_empresa(db, email)
+            empresa_id = _vincular_empresa(db, email, _cnpj_from_auth(auth_user))
             if empresa_id:
                 perfil.empresa_id = empresa_id
                 db.commit()
@@ -125,7 +143,8 @@ def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
         return perfil
 
     papel = _papel_from_auth(auth_user)
-    empresa_id = _vincular_empresa(db, email) if papel == PapelAdmin.EMPRESA else None
+    cnpj = _cnpj_from_auth(auth_user) if papel == PapelAdmin.EMPRESA else None
+    empresa_id = _vincular_empresa(db, email, cnpj) if papel == PapelAdmin.EMPRESA else None
 
     perfil = UsuarioAdmin(
         nome=_nome_from_auth(auth_user),
