@@ -1,9 +1,22 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/layout/dashboard-nav";
 import { getAuthUser } from "@/lib/supabase/server";
-import { buscarPerfil, ApiError } from "@/lib/api-server";
+import { buscarPerfil, sincronizarPerfil, ApiError } from "@/lib/api-server";
 
 export const dynamic = "force-dynamic";
+
+async function carregarPerfil() {
+  try {
+    return await buscarPerfil();
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      await sincronizarPerfil();
+      return await buscarPerfil();
+    }
+    throw err;
+  }
+}
 
 export default async function DashboardLayout({
   children,
@@ -11,10 +24,22 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const user = await getAuthUser();
-  if (!user) redirect("/login?redirect=/dashboard");
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <p className="text-sm text-slate-600">
+          Sessao expirada.{" "}
+          <Link href="/login?redirect=/dashboard/projetos" className="font-semibold text-brand-600">
+            Entrar novamente
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   try {
-    const perfil = await buscarPerfil();
+    const perfil = await carregarPerfil();
     if (perfil.is_empresa) redirect("/empresa");
     if (!perfil.is_admin) redirect(perfil.painel_url);
 
@@ -26,6 +51,13 @@ export default async function DashboardLayout({
     );
   } catch (err) {
     if (err instanceof ApiError && err.status === 403) redirect("/conta");
-    redirect("/");
+
+    const email = user.email ?? "";
+    return (
+      <div className="flex min-h-screen bg-slate-50">
+        <DashboardNav userEmail={email} />
+        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+      </div>
+    );
   }
 }

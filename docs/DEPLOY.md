@@ -54,16 +54,17 @@ Integração com **GitHub**: conecte o repositório `conectaecapacita/plataforma
 
 ## 3. Login / e-mails (erro de limite)
 
-O Supabase gratuito envia **~2 e-mails/hora**. Para evitar `email rate limit exceeded`:
+O Supabase gratuito limita e-mails quando usa o SMTP padrao. Solucao: **`docs/SMTP-SETUP.md`** (Resend recomendado).
 
-1. Mantenha `NEXT_PUBLIC_ALLOW_SIGNUP=false` — crie usuários em **Supabase → Authentication → Users**
-2. Vincule com `python scripts/seed_admin.py`
-3. Ou configure **SMTP customizado** em Authentication → SMTP
-4. Em dev: desative **Confirm email** temporariamente e use `AUTH_REQUIRE_EMAIL_CONFIRM=false` no backend
+Alternativas em dev:
+
+1. Desative **Confirm email** no Supabase
+2. `AUTH_REQUIRE_EMAIL_CONFIRM=false` no Render
+3. Crie usuarios em **Authentication → Users** (sem enviar e-mail)
 
 ---
 
-## Checklist pós-deploy
+## 4. Checklist pos-deploy
 
 - [ ] `SUPABASE_URL` no Render **sem** `/rest/v1`
 - [ ] `CORS_ORIGINS` com URL da Vercel

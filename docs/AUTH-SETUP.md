@@ -12,11 +12,12 @@ Cadastro **Empresa**: em `/login` → Criar conta → tipo **Empresa**. O sistem
 
 ## 1. Supabase Dashboard
 
-### E-mail
+### E-mail e limite de envio
 
 1. **Authentication → Providers → Email** — habilite
-2. **Authentication → Email Templates** — confira template de recuperacao de senha
-3. Em desenvolvimento, pode desmarcar **Confirm email** para testar mais rapido
+2. **SMTP customizado (Resend)** — **obrigatorio em producao** para evitar limite de e-mails. Guia completo: **`docs/SMTP-SETUP.md`**
+3. **Authentication → Email Templates** — confira recuperacao de senha e confirmacao de cadastro
+4. Em desenvolvimento, pode desmarcar **Confirm email** para testar mais rapido
 
 ### Google (login social)
 

@@ -26,6 +26,7 @@ export function LoginForm() {
   const [cnpj, setCnpj] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(
     authError === "auth_callback" ? "Falha ao entrar com Google. Tente novamente." : null,
@@ -108,6 +109,11 @@ export function LoginForm() {
     if (mode === "signup") {
       if (tipoConta === "empresa" && !cnpj.trim()) {
         setMessage("Informe o CNPJ da empresa.");
+        setLoading(false);
+        return;
+      }
+      if (password !== confirmPassword) {
+        setMessage("As senhas nao coincidem.");
         setLoading(false);
         return;
       }
@@ -335,6 +341,21 @@ export function LoginForm() {
                 className={inputClass}
               />
             </div>
+
+            {mode === "signup" && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Confirmar senha</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            )}
 
             {mode === "login" && (
               <button

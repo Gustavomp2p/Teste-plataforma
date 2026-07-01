@@ -4,8 +4,8 @@ export function mapAuthError(message: string): string {
 
   if (lower.includes("over_email_send_rate_limit") || lower.includes("email rate limit")) {
     return (
-      "Limite de e-mails do Supabase atingido (cerca de 2 por hora no plano gratuito). " +
-      "Aguarde alguns minutos, use uma conta já criada no painel Supabase, ou configure SMTP customizado."
+      "Limite de e-mails do Supabase atingido. Configure SMTP customizado (Resend) — veja docs/SMTP-SETUP.md — " +
+      "ou aguarde alguns minutos e tente novamente."
     );
   }
   if (lower.includes("invalid login credentials")) {
