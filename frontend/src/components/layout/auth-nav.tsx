@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getAuthUser } from "@/lib/supabase/server";
-import { buscarPerfil } from "@/lib/api-server";
 import { ButtonLink } from "@/components/ui/button";
 
+// O estado de login do header depende SOMENTE do Supabase (rapido e confiavel).
+// Nao chamamos o backend aqui: se o backend estiver lento/fora (cold start no
+// Render), o usuario logado nao pode aparecer como "Entrar".
 async function AuthNavContent() {
   const user = await getAuthUser();
 
@@ -15,19 +17,14 @@ async function AuthNavContent() {
     );
   }
 
-  let painelUrl = "/conta";
-  let nome = user.email?.split("@")[0] ?? "Conta";
-
-  try {
-    const perfil = await buscarPerfil();
-    painelUrl = perfil.painel_url;
-    nome = perfil.nome;
-  } catch {
-    const tipo = (user.user_metadata?.tipo_conta as string | undefined)?.toLowerCase();
-    if (tipo === "empresa") painelUrl = "/empresa";
-    const metaNome = user.user_metadata?.nome as string | undefined;
-    if (metaNome) nome = metaNome;
-  }
+  const tipo = (user.user_metadata?.tipo_conta as string | undefined)?.toLowerCase();
+  const painelUrl = tipo === "empresa" ? "/empresa" : "/conta";
+  const nome =
+    (user.user_metadata?.nome as string | undefined) ||
+    (user.user_metadata?.full_name as string | undefined) ||
+    (user.user_metadata?.name as string | undefined) ||
+    user.email?.split("@")[0] ||
+    "Conta";
 
   return (
     <>
