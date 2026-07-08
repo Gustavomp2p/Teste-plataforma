@@ -1,8 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { getSupabaseEnv } from "@/lib/env";
 
-export async function createClient() {
+/**
+ * cache() garante que, dentro de UMA MESMA requisição (SSR), todas as
+ * chamadas a createClient() reutilizem a MESMA instância do client Supabase.
+ * Sem isso, cada chamada (ex: getAuthUser() e getAccessToken() na mesma
+ * página) cria um client novo e independente. Se dois clients tentam
+ * validar/renovar a mesma sessão ao mesmo tempo, um deles pode falhar com
+ * "Invalid Refresh Token: Already Used" e derrubar a sessão inteira —
+ * causando logout ao simplesmente atualizar a página (F5).
+ */
+export const createClient = cache(async () => {
   const cookieStore = await cookies();
   const { url, key } = getSupabaseEnv();
 
@@ -22,23 +32,36 @@ export async function createClient() {
       },
     },
   });
-}
+});
 
 /**
- * Retorna o access token validando via getClaims (verificação local do JWT,
- * sem round-trip ao servidor de auth). Evita o problema de "Invalid Refresh
- * Token: Already Used" que ocorre quando múltiplas chamadas concorrentes
- * (proxy + server components + route handlers) tentam usar getSession()/
- * getUser() e disparam refresh simultâneo do mesmo refresh token.
+ * Também memoizado por requisição: garante que a validação de sessão
+ * (getClaims, com fallback para getUser) só rode UMA VEZ por requisição,
+ * não importa quantas vezes getAuthUser()/getAccessToken() sejam chamados.
+ * Tenta getClaims (validação local, sem round-trip) e, se falhar por
+ * qualquer motivo, cai para getUser — só retorna claims null quando
+ * realmente não há sessão, evitando deslogar por falha transitória.
+ */
+const getValidatedSession = cache(async () => {
+  const supabase = await createClient();
+  try {
+    const { data, error } = await supabase.auth.getClaims();
+    if (!error && data?.claims) return { claims: data.claims, supabase };
+  } catch {
+    /* fallback abaixo */
+  }
+  return { claims: null as Record<string, unknown> | null, supabase };
+});
+
+/**
+ * Retorna o access token a partir da sessão já validada nesta requisição
+ * (getValidatedSession acima). Evita chamadas concorrentes de getSession()/
+ * getUser() que disparariam refresh duplicado do mesmo refresh token.
  */
 export async function getAccessToken(): Promise<string | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) return null;
+  const { claims, supabase } = await getValidatedSession();
+  if (!claims) return null;
 
-  // getClaims não retorna o access_token bruto, então buscamos a sessão
-  // já validada (sem forçar novo refresh, pois getClaims acima já garantiu
-  // que a sessão é válida/atualizada nesta requisição).
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -46,18 +69,15 @@ export async function getAccessToken(): Promise<string | null> {
 }
 
 /**
- * Sessao Supabase valida. Tenta getClaims (validacao local, sem round-trip) e,
- * se falhar por qualquer motivo, cai para getUser. So retorna null quando
- * realmente nao ha sessao — evita deslogar o usuario por falha transitoria.
+ * Sessao Supabase validada. Tenta getClaims (validação local, sem round-trip)
+ * e, se falhar, cai para getUser (feito dentro de getValidatedSession). Só
+ * retorna null quando realmente não há sessão — evita deslogar o usuário por
+ * falha transitória. Reaproveitada dentro da mesma requisição via cache().
  */
 export async function getAuthUser() {
-  const supabase = await createClient();
-  try {
-    const { data, error } = await supabase.auth.getClaims();
-    if (!error && data?.claims) return data.claims;
-  } catch {
-    /* fallback para getUser */
-  }
+  const { claims, supabase } = await getValidatedSession();
+  if (claims) return claims;
+
   const { data } = await supabase.auth.getUser();
   return data.user ?? null;
 }
