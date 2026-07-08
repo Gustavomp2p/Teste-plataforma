@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil, ApiError } from "@/lib/api-server";
 import { PAPEL_LABEL, type PapelUsuario } from "@/lib/auth";
@@ -82,6 +82,7 @@ export default async function ContaPage() {
       </div>
     );
   } catch (err) {
+    unstable_rethrow(err);
     const msg = err instanceof ApiError ? err.message : "Erro ao carregar perfil.";
     return (
       <div className="flex min-h-screen items-center justify-center p-6">

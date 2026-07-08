@@ -48,7 +48,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && pathname === "/login") {
-    const dest = request.nextUrl.searchParams.get("redirect") || "/";
+    const dest = request.nextUrl.searchParams.get("redirect") || "/conta";
     return redirectTo(dest, (u) => u.searchParams.delete("redirect"));
   }
 

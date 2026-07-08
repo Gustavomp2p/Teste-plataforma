@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { DashboardNav } from "@/components/layout/dashboard-nav";
 import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil, sincronizarPerfil, ApiError } from "@/lib/api-server";
@@ -50,14 +50,8 @@ export default async function DashboardLayout({
       </div>
     );
   } catch (err) {
-    if (err instanceof ApiError && err.status === 403) redirect("/conta");
-
-    const email = user.email ?? "";
-    return (
-      <div className="flex min-h-screen bg-slate-50">
-        <DashboardNav userEmail={email} />
-        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
-      </div>
-    );
+    unstable_rethrow(err);
+    // Fail-closed: qualquer falha ao carregar o perfil retira o acesso ao painel admin.
+    redirect("/conta");
   }
 }

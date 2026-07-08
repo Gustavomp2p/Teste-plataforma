@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase/server";
 import {
   buscarPerfil,
@@ -102,6 +102,7 @@ export default async function EmpresaPage() {
       </div>
     );
   } catch (err) {
+    unstable_rethrow(err);
     const msg = err instanceof ApiError ? err.message : "Erro ao carregar painel da empresa.";
     return (
       <div className="flex min-h-screen items-center justify-center p-6">
