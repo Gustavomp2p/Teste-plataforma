@@ -45,10 +45,19 @@ export async function getAccessToken(): Promise<string | null> {
   return session?.access_token ?? null;
 }
 
-/** Sessao Supabase valida (preferir a getClaims em guards de rota). */
+/**
+ * Sessao Supabase valida. Tenta getClaims (validacao local, sem round-trip) e,
+ * se falhar por qualquer motivo, cai para getUser. So retorna null quando
+ * realmente nao ha sessao — evita deslogar o usuario por falha transitoria.
+ */
 export async function getAuthUser() {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) return null;
-  return data.claims;
+  try {
+    const { data, error } = await supabase.auth.getClaims();
+    if (!error && data?.claims) return data.claims;
+  } catch {
+    /* fallback para getUser */
+  }
+  const { data } = await supabase.auth.getUser();
+  return data.user ?? null;
 }

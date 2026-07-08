@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/constants";
 import { mapAuthError } from "@/lib/auth-errors";
@@ -15,7 +15,6 @@ const inputClass =
   "w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100";
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const authError = searchParams.get("error");
@@ -44,15 +43,18 @@ export function LoginForm() {
 
   async function syncAndRedirect() {
     const fallback = painelPadrao();
+    let dest = fallback;
     try {
       const res = await fetch("/api/auth/sync", { method: "POST" });
       const data = await res.json().catch(() => ({}));
-      const dest = res.ok && data.painel_url ? data.painel_url : fallback;
-      router.push(dest);
+      if (res.ok && data.painel_url) dest = data.painel_url;
     } catch {
-      router.push(fallback);
+      /* mantem o fallback */
     }
-    router.refresh();
+    // Navegacao "hard": garante que o servidor use o cookie de sessao recem-criado
+    // no login. Com router.push (client-side) o middleware podia rodar antes do
+    // cookie propagar e devolver o usuario para a tela de login.
+    window.location.assign(dest);
   }
 
   async function handleGoogle() {

@@ -29,6 +29,12 @@ export async function updateSession(request: NextRequest) {
   // que era a causa provável do logout ao trocar de página.
   const { data, error } = await supabase.auth.getClaims();
   const user = !error && data?.claims ? data.claims : null;
+
+  // Existe cookie de sessao do Supabase? (sb-<ref>-auth-token[.n])
+  const hasSessionCookie = request.cookies
+    .getAll()
+    .some((c) => /^sb-.*-auth-token/.test(c.name));
+
   const pathname = request.nextUrl.pathname;
 
   // Redireciona preservando os cookies renovados da sessao (evita perder o login).
@@ -46,7 +52,10 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/conta") ||
     pathname.startsWith("/empresa");
 
-  if (isProtected && !user) {
+  // So manda para o login quando NAO ha sessao validada E NAO ha cookie de sessao.
+  // Se a validacao falhou (rate limit / erro transitorio) mas o cookie existe,
+  // deixa passar: a pagina revalida e nao deslogamos o usuario indevidamente.
+  if (isProtected && !user && !hasSessionCookie) {
     return redirectTo("/login", (u) => u.searchParams.set("redirect", pathname));
   }
 
