@@ -22,13 +22,12 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // getClaims valida o JWT localmente (via JWKS) em vez de chamar
-  // getUser(), que sempre bate no servidor de Auth. Isso evita a corrida
-  // de refresh token quando várias requisições/rotas tentam renovar a
-  // sessão ao mesmo tempo (erro "Invalid Refresh Token: Already Used"),
-  // que era a causa provável do logout ao trocar de página.
-  const { data, error } = await supabase.auth.getClaims();
-  const user = !error && data?.claims ? data.claims : null;
+  // Valida a sessao com getUser (compativel com qualquer configuracao de chave
+  // do Supabase). Protecao contra corrida de refresh fica por conta do fail-open
+  // abaixo + prefetch desligado na navegacao do dashboard.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Existe cookie de sessao do Supabase? (sb-<ref>-auth-token[.n])
   const hasSessionCookie = request.cookies
