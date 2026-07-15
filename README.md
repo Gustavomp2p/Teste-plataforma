@@ -45,6 +45,8 @@ Construir uma plataforma capaz de:
 
 ## Deploy
 
+> **Acesso:** Basta acessar o frontend — ele inicializa o backend automaticamente.
+
 ### Frontend
 
 * **Vercel:** https://teste-plataforma.vercel.app/
@@ -52,8 +54,6 @@ Construir uma plataforma capaz de:
 ### Backend
 
 * **Render:** https://plataforma-projetos-bfd-23ag.onrender.com/
-
-> **Importante:** O backend está hospedado no plano gratuito do Render. Nesse plano, o serviço entra automaticamente em modo de suspensão após aproximadamente **15 minutos de inatividade**. Ao acessar a aplicação após um período sem uso, recomenda-se abrir primeiro o link do backend no Render e aguardar alguns instantes até que o serviço seja reativado. Em seguida, acesse o frontend no Vercel. Nas próximas requisições, enquanto o backend permanecer ativo, a aplicação funcionará normalmente.
 
 ## Equipe
 
