@@ -34,7 +34,7 @@ async function AuthNavContent() {
       >
         Ola, {nome}
       </Link>
-      <Link href="/auth/signout" className="hidden text-xs text-slate-500 hover:text-brand-600 sm:inline">
+      <Link href="/auth/signout" prefetch={false} className="hidden text-xs text-slate-500 hover:text-brand-600 sm:inline">
         Sair
       </Link>
     </>
