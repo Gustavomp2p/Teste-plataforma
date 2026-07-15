@@ -107,7 +107,7 @@ export type ProjetoFiltros = {
   limit?: number;
 };
 
-const API_URL = (process.env.API_URL ?? "http://localhost:8000").replace(/^\uFEFF/, "").trim();
+const API_URL = (process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/^\uFEFF/, "").trim();
 const API_KEY = process.env.API_KEY?.replace(/^\uFEFF/, "").trim();
 
 export class ApiError extends Error {
