@@ -78,7 +78,12 @@ export default async function EmpresaPage() {
           )}
 
           <section className="mt-8">
-            <h2 className="text-lg font-semibold text-slate-900">Suas demandas</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-slate-900">Suas demandas</h2>
+              <ButtonLink href="/#cadastro" variant="primary">
+                Nova demanda
+              </ButtonLink>
+            </div>
             {projetos.length === 0 ? (
               <p className="mt-3 text-sm text-slate-500">Nenhuma demanda encontrada para esta conta.</p>
             ) : (
