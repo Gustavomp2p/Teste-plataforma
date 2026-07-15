@@ -23,7 +23,7 @@ export default async function ContaPage() {
             <Link href="/" className="text-sm font-bold text-brand-700">
               {SITE.name}
             </Link>
-            <Link href="/auth/signout" className="text-sm text-slate-500 hover:text-brand-600">
+            <Link href="/auth/signout" prefetch={false} className="text-sm text-slate-500 hover:text-brand-600">
               Sair
             </Link>
           </div>

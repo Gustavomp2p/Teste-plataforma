@@ -61,6 +61,7 @@ export function DashboardNav({ userEmail }: { userEmail?: string }) {
         </Link>
         <Link
           href="/auth/signout"
+          prefetch={false}
           className="mt-1 inline-block text-xs font-medium text-brand-600 hover:text-brand-500"
         >
           Sair
