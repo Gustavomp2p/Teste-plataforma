@@ -71,10 +71,13 @@ export default async function ContaPage() {
               </div>
             ) : (
               <div className="rounded-xl border border-slate-200 bg-white p-6">
-                <h2 className="font-semibold text-slate-900">Acompanhar demandas</h2>
+                <h2 className="font-semibold text-slate-900">Consultar demandas</h2>
                 <p className="mt-2 text-sm text-slate-500">
-                  Use o mesmo e-mail do cadastro para que sua demanda seja vinculada à sua conta.
+                  Veja as demandas aprovadas disponíveis na plataforma.
                 </p>
+                <ButtonLink href="/conta/demandas" variant="primary" className="mt-4">
+                  Ver demandas
+                </ButtonLink>
               </div>
             )}
           </div>

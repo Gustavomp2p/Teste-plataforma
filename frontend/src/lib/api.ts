@@ -98,6 +98,38 @@ export type ProjetoUpdateInput = {
   categoria_id?: number | null;
 };
 
+export type DemandaPublica = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  tecnologias: string | null;
+  tipo_problema: string | null;
+  urgencia: Nivel | string | null;
+  status: StatusProjeto | string;
+  complexidade: Nivel | string | null;
+  briefing_contexto: string | null;
+  briefing_objetivo: string | null;
+  briefing_escopo: string | null;
+  briefing_requisitos: string | null;
+  briefing_resultado: string | null;
+  categoria_id: number | null;
+  empresa_id: number;
+  criado_em: string;
+  atualizado_em: string | null;
+};
+
+export type DemandaPublicaDetalhe = DemandaPublica & {
+  empresa?: Pick<Empresa, "id" | "nome" | "cidade" | "segmento"> | null;
+  categoria?: Categoria | null;
+};
+
+export type DemandaFiltros = {
+  cidade?: string;
+  segmento?: string;
+  skip?: number;
+  limit?: number;
+};
+
 export type ProjetoFiltros = {
   status?: string;
   cidade?: string;
@@ -242,6 +274,23 @@ export function sincronizarPerfil(accessToken?: string | null) {
 
 export function listarProjetosEmpresa(accessToken?: string | null) {
   return request<Projeto[]>("/empresa/me/projetos", { auth: true, accessToken });
+}
+
+export function buscarProjetoEmpresa(id: number, accessToken?: string | null) {
+  return request<ProjetoDetalhe>(`/empresa/me/projetos/${id}`, { auth: true, accessToken });
+}
+
+export function listarDemandasDisponiveis(filtros: DemandaFiltros = {}, accessToken?: string | null) {
+  const searchParams: Record<string, string> = {};
+  if (filtros.cidade) searchParams.cidade = filtros.cidade;
+  if (filtros.segmento) searchParams.segmento = filtros.segmento;
+  if (filtros.skip != null) searchParams.skip = String(filtros.skip);
+  if (filtros.limit != null) searchParams.limit = String(filtros.limit);
+  return request<DemandaPublica[]>("/demandas/", { auth: true, searchParams, accessToken });
+}
+
+export function buscarDemandaDisponivel(id: number, accessToken?: string | null) {
+  return request<DemandaPublicaDetalhe>(`/demandas/${id}`, { auth: true, accessToken });
 }
 
 export function buscarEmpresaVinculada(accessToken?: string | null) {

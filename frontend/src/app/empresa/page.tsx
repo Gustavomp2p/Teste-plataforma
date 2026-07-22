@@ -89,15 +89,17 @@ export default async function EmpresaPage() {
             ) : (
               <ul className="mt-4 space-y-3">
                 {projetos.map((p) => (
-                  <li
-                    key={p.id}
-                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h3 className="font-medium text-slate-900">{p.titulo}</h3>
-                      <StatusBadge status={p.status as StatusProjeto} />
-                    </div>
-                    <p className="mt-2 line-clamp-2 text-sm text-slate-600">{p.descricao}</p>
+                  <li key={p.id}>
+                    <Link
+                      href={`/empresa/demandas/${p.id}`}
+                      className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-brand-300 hover:shadow-md"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="font-medium text-slate-900">{p.titulo}</h3>
+                        <StatusBadge status={p.status as StatusProjeto} />
+                      </div>
+                      <p className="mt-2 line-clamp-2 text-sm text-slate-600">{p.descricao}</p>
+                    </Link>
                   </li>
                 ))}
               </ul>

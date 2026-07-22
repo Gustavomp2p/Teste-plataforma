@@ -73,4 +73,48 @@ class EmpresaResumo(BaseModel):
     class Config:
         from_attributes = True
 
+
+class EmpresaResumoPublico(BaseModel):
+    """Dados públicos da empresa (sem e-mail/telefone) para catálogo de usuários."""
+
+    id: int
+    nome: str
+    cidade: Optional[str]
+    segmento: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+class DemandaPublicaResponse(BaseModel):
+    """Demanda sanitizada para usuários autenticados (sem campos internos)."""
+
+    id: int
+    titulo: str
+    descricao: str
+    tecnologias: Optional[str]
+    tipo_problema: Optional[str]
+    urgencia: Optional[str]
+    status: str
+    complexidade: Optional[str]
+    briefing_contexto: Optional[str]
+    briefing_objetivo: Optional[str]
+    briefing_escopo: Optional[str]
+    briefing_requisitos: Optional[str]
+    briefing_resultado: Optional[str]
+    categoria_id: Optional[int]
+    empresa_id: int
+    criado_em: datetime
+    atualizado_em: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class DemandaPublicaDetalheResponse(DemandaPublicaResponse):
+    empresa: Optional[EmpresaResumoPublico] = None
+    categoria: Optional[CategoriaResponse] = None
+
+
 ProjetoDetalheResponse.model_rebuild()
+DemandaPublicaDetalheResponse.model_rebuild()

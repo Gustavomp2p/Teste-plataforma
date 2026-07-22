@@ -10,8 +10,12 @@ import {
   atualizarProjeto as atualizarProjetoBase,
   atualizarStatusProjeto as atualizarStatusProjetoBase,
   listarProjetosEmpresa as listarProjetosEmpresaBase,
+  buscarProjetoEmpresa as buscarProjetoEmpresaBase,
+  listarDemandasDisponiveis as listarDemandasDisponiveisBase,
+  buscarDemandaDisponivel as buscarDemandaDisponivelBase,
   buscarEmpresaVinculada as buscarEmpresaVinculadaBase,
   type ProjetoFiltros,
+  type DemandaFiltros,
   type ProjetoUpdateInput,
   type StatusProjeto,
 } from "@/lib/api";
@@ -54,6 +58,18 @@ export async function sincronizarPerfil() {
 
 export async function listarProjetosEmpresa() {
   return listarProjetosEmpresaBase(await token());
+}
+
+export async function buscarProjetoEmpresa(id: number) {
+  return buscarProjetoEmpresaBase(id, await token());
+}
+
+export async function listarDemandasDisponiveis(filtros: DemandaFiltros = {}) {
+  return listarDemandasDisponiveisBase(filtros, await token());
+}
+
+export async function buscarDemandaDisponivel(id: number) {
+  return buscarDemandaDisponivelBase(id, await token());
 }
 
 export async function buscarEmpresaVinculada() {
