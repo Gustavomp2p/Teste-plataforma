@@ -76,6 +76,21 @@ Detalhes do modelo: `docs/MODELO-DADOS.md` · Troubleshooting MCP: `docs/SUPABAS
 
 ---
 
+## Variáveis de ambiente no Render
+
+As seguintes variáveis devem ser configuradas no painel do Render em **Environment Variables**:
+
+| Variável | Descrição |
+|----------|-----------|
+| `CORS_ORIGINS` | Origens permitidas (ex: `https://seu-site.vercel.app`) |
+| `DATABASE_URL` | URL de conexão com o Supabase (Session Pooler) |
+| `FRONTEND_URL` | URL do frontend no Vercel |
+| `PYTHON_VERSION` | Versão do Python (ex: `3.11.0`) |
+| `SUPABASE_ANON_KEY` | Publishable key do Supabase |
+| `SUPABASE_URL` | URL do projeto no Supabase |
+
+---
+
 ## Documentação interativa
 
 Com a API rodando, acesse:
