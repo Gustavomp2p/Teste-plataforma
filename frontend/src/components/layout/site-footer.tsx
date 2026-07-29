@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { SITE, NAV_LINKS } from "@/lib/constants";
-import { LANDING_IMAGES } from "@/lib/landing-content";
-import { PartnerLogoCard } from "@/components/landing/partner-logo-card";
 
 export function SiteFooter() {
   return (
@@ -58,22 +56,6 @@ export function SiteFooter() {
               </a>
             </p>
           </div>
-        </div>
-
-        <div className="mt-12 border-t border-slate-700 pt-10">
-          <ul className="partner-tile-grid">
-            <PartnerLogoCard
-              src={LANDING_IMAGES.parceiroMcti}
-              alt="Ministério da Ciência, Tecnologia e Inovação"
-              label="MCTI · Governo Federal"
-            />
-            <PartnerLogoCard
-              src={LANDING_IMAGES.parceiroHardwareDark}
-              alt="Instituto Hardware BR"
-              label="Instituto Hardware BR"
-              unoptimized
-            />
-          </ul>
         </div>
 
         <p className="mt-10 text-center text-xs text-slate-500">

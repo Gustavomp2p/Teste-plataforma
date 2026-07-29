@@ -8,7 +8,7 @@ Construir uma plataforma capaz de:
 
 * captar demandas reais de empresas;
 * estruturar projetos tecnológicos;
-* alimentar futuras turmas do programa.
+* alimentar futuras squads do programa.
 
 ## Estrutura
 

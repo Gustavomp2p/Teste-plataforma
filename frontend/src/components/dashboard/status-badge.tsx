@@ -5,6 +5,7 @@ const LEGACY_LABEL: Record<string, string> = {
   aberto: "Novo",
   em_andamento: "Em análise",
   concluido: "Estruturado",
+  aprovado_turma: "Aprovado para squad",
 };
 
 export function StatusBadge({ status }: { status: StatusProjeto | string }) {

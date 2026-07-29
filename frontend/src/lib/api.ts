@@ -6,7 +6,7 @@ export type StatusProjeto =
   | "novo"
   | "em_analise"
   | "em_contato"
-  | "aprovado_turma"
+  | "aprovado_squad"
   | "reprovado"
   | "estruturado";
 

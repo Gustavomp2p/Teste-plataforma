@@ -14,8 +14,10 @@ from app.schemas.projeto import DemandaPublicaDetalheResponse, DemandaPublicaRes
 router = APIRouter()
 
 # Status liberados no catálogo público (pós-aprovação pela equipe BFD).
+# Inclui legado aprovado_turma até a migration 005 rodar em todos os ambientes.
 STATUS_DISPONIVEIS = {
-    StatusProjeto.aprovado_turma.value,
+    StatusProjeto.aprovado_squad.value,
+    "aprovado_turma",
     StatusProjeto.estruturado.value,
 }
 

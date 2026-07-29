@@ -32,7 +32,7 @@ usuarios_admin (painel — login futuro)
 | categoria_id | FK | Categorias |
 
 ### Status do projeto
-`novo` → `em_analise` → `em_contato` → `aprovado_turma` / `reprovado` → `estruturado`
+`novo` → `em_analise` → `em_contato` → `aprovado_squad` / `reprovado` → `estruturado`
 
 ### categorias (seed)
 Automação, Sistema web, App mobile, Dados e IA, Outro.

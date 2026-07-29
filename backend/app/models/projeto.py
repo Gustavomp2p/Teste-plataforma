@@ -8,7 +8,7 @@ class StatusProjeto(str, enum.Enum):
     novo = "novo"
     em_analise = "em_analise"
     em_contato = "em_contato"
-    aprovado_turma = "aprovado_turma"
+    aprovado_squad = "aprovado_squad"
     reprovado = "reprovado"
     estruturado = "estruturado"
 

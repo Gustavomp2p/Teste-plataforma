@@ -49,18 +49,8 @@ export default async function ContaPage() {
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
-              <h2 className="font-semibold text-slate-900">Cadastrar demanda</h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Envie uma nova demanda tecnológica para o programa.
-              </p>
-              <ButtonLink href="/#cadastro" variant="primary" className="mt-4">
-                Ir para cadastro
-              </ButtonLink>
-            </div>
-
             {perfil.is_admin ? (
-              <div className="rounded-xl border border-brand-200 bg-brand-50 p-6">
+              <div className="rounded-xl border border-brand-200 bg-brand-50 p-6 sm:col-span-2">
                 <h2 className="font-semibold text-brand-900">Painel administrativo</h2>
                 <p className="mt-2 text-sm text-brand-800/80">
                   Gerencie projetos, empresas e qualificacoes.
@@ -70,15 +60,26 @@ export default async function ContaPage() {
                 </ButtonLink>
               </div>
             ) : (
-              <div className="rounded-xl border border-slate-200 bg-white p-6">
-                <h2 className="font-semibold text-slate-900">Consultar demandas</h2>
-                <p className="mt-2 text-sm text-slate-500">
-                  Veja as demandas aprovadas disponíveis na plataforma.
-                </p>
-                <ButtonLink href="/conta/demandas" variant="primary" className="mt-4">
-                  Ver demandas
-                </ButtonLink>
-              </div>
+              <>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <h2 className="font-semibold text-slate-900">Cadastrar demanda</h2>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Envie uma nova demanda tecnológica para o programa.
+                  </p>
+                  <ButtonLink href="/#cadastro" variant="primary" className="mt-4">
+                    Ir para cadastro
+                  </ButtonLink>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-6">
+                  <h2 className="font-semibold text-slate-900">Consultar demandas</h2>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Veja as demandas aprovadas disponíveis na plataforma.
+                  </p>
+                  <ButtonLink href="/conta/demandas" variant="primary" className="mt-4">
+                    Ver demandas
+                  </ButtonLink>
+                </div>
+              </>
             )}
           </div>
         </main>

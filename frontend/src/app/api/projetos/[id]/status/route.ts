@@ -23,7 +23,7 @@ export async function PATCH(
 
   if (!STATUS_OPTIONS.includes(status as StatusProjeto)) {
     return NextResponse.json(
-      { message: "Status inválido. Use: novo, em_analise, em_contato, aprovado_turma, reprovado ou estruturado." },
+      { message: "Status inválido. Use: novo, em_analise, em_contato, aprovado_squad, reprovado ou estruturado." },
       { status: 400 },
     );
   }

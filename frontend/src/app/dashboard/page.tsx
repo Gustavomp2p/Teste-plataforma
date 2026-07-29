@@ -18,7 +18,11 @@ export default async function DashboardPage() {
       (p) => p.status === "em_analise" || p.status === "em_andamento" || p.status === "em_contato",
     ).length;
     const estruturados = projetos.filter(
-      (p) => p.status === "estruturado" || p.status === "aprovado_turma" || p.status === "concluido",
+      (p) =>
+        p.status === "estruturado" ||
+        p.status === "aprovado_squad" ||
+        p.status === "aprovado_turma" ||
+        p.status === "concluido",
     ).length;
     const recentes = [...projetos]
       .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())

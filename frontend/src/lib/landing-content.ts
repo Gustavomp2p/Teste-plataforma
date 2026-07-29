@@ -56,7 +56,7 @@ export const FLOW_STEPS = [
   {
     step: "3",
     title: "Projeto é estruturado",
-    description: "Escopo, entregas e cronograma definidos para as turmas.",
+    description: "Escopo, entregas e cronograma definidos para as squads.",
   },
   {
     step: "4",

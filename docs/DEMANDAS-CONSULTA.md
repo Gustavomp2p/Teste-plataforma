@@ -30,7 +30,7 @@ Permissões de página:
 
 | Método | Rota | Quem | Comportamento |
 |--------|------|------|---------------|
-| GET | `/demandas/` | usuário ou admin autenticado | Lista status `aprovado_turma` e `estruturado`. Empresa recebe **403**. |
+| GET | `/demandas/` | usuário ou admin autenticado | Lista status `aprovado_squad` e `estruturado`. Empresa recebe **403**. |
 | GET | `/demandas/{id}` | usuário ou admin autenticado | Detalhe sanitizado (sem `observacoes_internas`, sem e-mail/telefone da empresa). Se status não liberado → **404**. |
 | GET | `/empresa/me/projetos` | empresa | Lista só demandas da empresa (já existia). |
 | GET | `/empresa/me/projetos/{id}` | empresa | Detalhe da demanda **própria**; `observacoes_internas` sempre `null` na resposta. |
@@ -43,10 +43,10 @@ Schemas novos: `DemandaPublicaResponse`, `DemandaPublicaDetalheResponse`, `Empre
 
 Não existe flag `publico` no banco. A regra adotada:
 
-- **Disponível para usuário:** `status IN (aprovado_turma, estruturado)`
+- **Disponível para usuário:** `status IN (aprovado_squad, estruturado)`
 - **Não listado:** `novo`, `em_analise`, `em_contato`, `reprovado` (ainda internos ou encerrados)
 
-Se a regra de negócio mudar (ex.: só `aprovado_turma`), ajustar `STATUS_DISPONIVEIS` em `backend/app/routes/demandas.py`.
+Se a regra de negócio mudar (ex.: só `aprovado_squad`), ajustar `STATUS_DISPONIVEIS` em `backend/app/routes/demandas.py`.
 
 ---
 
@@ -80,9 +80,9 @@ Esperado: `/demandas/`, `/demandas/{demanda_id}`, `/empresa/me/projetos/{projeto
 ## Inconsistências encontradas
 
 1. **“Demanda” vs “projeto”:** no banco e na API admin o recurso é `projetos`. No UX usuário/empresa usamos “demanda”. São a mesma entidade.
-2. **`/dashboard/demandas` ≠ catálogo público:** a fila admin lista só status `novo` (inbox). O catálogo de usuário lista `aprovado_turma` / `estruturado`. Nomes parecidos, públicos diferentes.
+2. **`/dashboard/demandas` ≠ catálogo público:** a fila admin lista só status `novo` (inbox). O catálogo de usuário lista `aprovado_squad` / `estruturado`. Nomes parecidos, públicos diferentes.
 3. **Sem flag de publicação:** disponibilidade depende só do status. Não há fluxo explícito “publicar no catálogo”.
 4. **Card “Cadastrar demanda” em `/conta`:** usuários comuns veem CTA para `/#cadastro`, mas o cadastro de demanda na landing cria **empresa + projeto**. Papel `usuario` tipicamente não deveria cadastrar demanda de empresa — possível confusão de produto.
 5. **Lista da empresa e observações internas:** `GET /empresa/me/projetos` agora zera `observacoes_internas` na resposta (mesmo schema `ProjetoResponse`). O ideal a médio prazo é um schema dedicado sem o campo.
-6. **Catálogo pode ficar vazio em produção** até a equipe mover demandas para `aprovado_turma` / `estruturado`.
+6. **Catálogo pode ficar vazio em produção** até a equipe mover demandas para `aprovado_squad` / `estruturado`.
 7. **Backend e frontend desacoplados no deploy:** se só o front subir, `/conta/demandas` quebra até o Render atualizar.

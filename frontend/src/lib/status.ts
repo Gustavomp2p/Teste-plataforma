@@ -4,7 +4,7 @@ export const STATUS_LABEL: Record<StatusProjeto, string> = {
   novo: "Novo",
   em_analise: "Em análise",
   em_contato: "Em contato",
-  aprovado_turma: "Aprovado para turma",
+  aprovado_squad: "Aprovado para squad",
   reprovado: "Reprovado",
   estruturado: "Estruturado",
 };
@@ -13,7 +13,7 @@ export const STATUS_BADGE: Record<StatusProjeto, string> = {
   novo: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
   em_analise: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
   em_contato: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200",
-  aprovado_turma: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
+  aprovado_squad: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
   reprovado: "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200",
   estruturado: "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200",
 };
@@ -22,7 +22,7 @@ export const STATUS_OPTIONS: StatusProjeto[] = [
   "novo",
   "em_analise",
   "em_contato",
-  "aprovado_turma",
+  "aprovado_squad",
   "reprovado",
   "estruturado",
 ];

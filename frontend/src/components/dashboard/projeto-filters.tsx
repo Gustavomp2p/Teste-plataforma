@@ -18,7 +18,7 @@ export function ProjetoFilters({ status, cidade, segmento, complexidade }: Proje
         <option value="novo">Novo</option>
         <option value="em_analise">Em análise</option>
         <option value="em_contato">Em contato</option>
-        <option value="aprovado_turma">Aprovado para turma</option>
+        <option value="aprovado_squad">Aprovado para squad</option>
         <option value="reprovado">Reprovado</option>
         <option value="estruturado">Estruturado</option>
       </select>
