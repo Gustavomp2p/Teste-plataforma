@@ -6,7 +6,7 @@ API desenvolvida com **FastAPI** + **PostgreSQL (Supabase)** | Residência em TI
 
 ## Pré-requisitos
 
-- Python 3.11+
+- Python 3.11.9
 - Conta no [Supabase](https://supabase.com) com um projeto criado
 
 ---
@@ -85,7 +85,7 @@ As seguintes variáveis devem ser configuradas no painel do Render em **Environm
 | `CORS_ORIGINS` | Origens permitidas (ex: `https://seu-site.vercel.app`) |
 | `DATABASE_URL` | URL de conexão com o Supabase (Session Pooler) |
 | `FRONTEND_URL` | URL do frontend no Vercel |
-| `PYTHON_VERSION` | Versão do Python (ex: `3.11.0`) |
+| `PYTHON_VERSION` | Versão do Python 3.11.9 |
 | `SUPABASE_ANON_KEY` | Publishable key do Supabase |
 | `SUPABASE_URL` | URL do projeto no Supabase |
 
