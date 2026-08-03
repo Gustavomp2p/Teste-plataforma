@@ -1,6 +1,20 @@
+import { Suspense } from "react";
 import { EmpresaCtaButton } from "@/components/landing/empresa-cta";
+import { getAuthUser } from "@/lib/supabase/server";
+import { buscarPerfil } from "@/lib/api-server";
 
-export function MidCtaSection() {
+async function MidCtaInner() {
+  try {
+    const user = await getAuthUser();
+    if (user) {
+      const perfil = await buscarPerfil();
+      // Admin não cadastra desafio — a faixa inteira some.
+      if (perfil.is_admin) return null;
+    }
+  } catch {
+    /* visitante / erro de perfil: mostra a faixa */
+  }
+
   return (
     <section className="px-4 pb-20 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-2xl bg-brand-600 px-8 py-10 text-white sm:flex-row sm:items-center sm:px-10">
@@ -26,5 +40,13 @@ export function MidCtaSection() {
         <EmpresaCtaButton context="mid" className="shrink-0" />
       </div>
     </section>
+  );
+}
+
+export function MidCtaSection() {
+  return (
+    <Suspense fallback={null}>
+      <MidCtaInner />
+    </Suspense>
   );
 }
