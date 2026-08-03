@@ -66,14 +66,14 @@ async function HeaderNav() {
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center transition-opacity hover:opacity-90">
           <Image
             src={LANDING_IMAGES.logoBolsa}
             alt="Bolsa Futuro Digital"
-            width={140}
-            height={48}
-            className="h-10 w-auto object-contain"
+            width={200}
+            height={72}
+            className="h-14 w-auto object-contain sm:h-16"
             priority
           />
         </Link>
@@ -84,8 +84,8 @@ export function SiteHeader() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <AuthNav />
-          <ButtonLink href="/cadastro" className="px-3 text-xs sm:px-5 sm:text-sm">
-            Cadastrar desafio
+          <ButtonLink href="/login?mode=signup" className="px-3 text-xs sm:px-5 sm:text-sm">
+            Criar conta
           </ButtonLink>
         </div>
       </div>

@@ -21,7 +21,7 @@ export function Hero() {
             {HERO.description}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <ButtonLink href="/cadastro">Cadastrar desafio</ButtonLink>
+            <ButtonLink href="/login?mode=signup">Criar conta</ButtonLink>
             <ButtonLink href="#solucao" variant="secondary">
               Conhecer soluções
             </ButtonLink>

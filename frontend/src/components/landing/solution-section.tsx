@@ -51,9 +51,12 @@ export function SolutionSection() {
         <p className="mt-3 max-w-2xl text-slate-600">
           Exemplos de desafios que podem virar soluções reais — cards clicáveis com mais detalhes.
         </p>
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {SOLUTIONS.map((item) => (
-            <li key={item.slug}>
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+          {SOLUTIONS.map((item, index) => (
+            <li
+              key={item.slug}
+              className={`lg:col-span-2 ${index === 3 ? "lg:col-start-2" : ""}`}
+            >
               <Link
                 href={`/solucoes/${item.slug}`}
                 className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md"
