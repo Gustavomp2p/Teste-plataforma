@@ -1,28 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { NAV_DASHBOARD, NAV_LINKS, SITE } from "@/lib/constants";
+import { NAV_DASHBOARD, NAV_LINKS } from "@/lib/constants";
 import { LANDING_IMAGES } from "@/lib/landing-content";
 import { ButtonLink } from "@/components/ui/button";
 import { AuthNav } from "@/components/layout/auth-nav";
 import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil } from "@/lib/api-server";
-
-async function HeaderCta() {
-  const user = await getAuthUser();
-  if (user) {
-    return (
-      <ButtonLink href="/cadastro" className="px-3 text-xs sm:px-5 sm:text-sm">
-        Cadastrar desafio
-      </ButtonLink>
-    );
-  }
-  return (
-    <ButtonLink href="/login?mode=signup" className="px-3 text-xs sm:px-5 sm:text-sm">
-      Criar conta
-    </ButtonLink>
-  );
-}
 
 function NavLinkItem({
   href,
@@ -61,7 +45,6 @@ async function HeaderNav() {
     showDashboard = false;
   }
 
-  // Contato no final; Dashboard (se admin) antes do Contato.
   const publicLinks = NAV_LINKS.filter((l) => l.label !== "Contato");
   const contact = NAV_LINKS.find((l) => l.label === "Contato");
 
@@ -84,10 +67,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center rounded-md bg-black px-1.5 py-1 transition-opacity hover:opacity-90"
-        >
+        <Link href="/" className="flex shrink-0 items-center transition-opacity hover:opacity-90">
           <Image
             src={LANDING_IMAGES.logoBolsa}
             alt="Bolsa Futuro Digital"
@@ -104,15 +84,9 @@ export function SiteHeader() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <AuthNav />
-          <Suspense
-            fallback={
-              <ButtonLink href="/login?mode=signup" className="px-3 text-xs sm:px-5 sm:text-sm">
-                Criar conta
-              </ButtonLink>
-            }
-          >
-            <HeaderCta />
-          </Suspense>
+          <ButtonLink href="/cadastro" className="px-3 text-xs sm:px-5 sm:text-sm">
+            Cadastrar desafio
+          </ButtonLink>
         </div>
       </div>
     </header>

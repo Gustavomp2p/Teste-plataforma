@@ -5,17 +5,26 @@ export function FlowSection() {
     <section id="fluxo" className="bg-slate-50 px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
-          01 · Como funciona
+          Como funciona
         </p>
         <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
-          Do desafio à solução em quatro etapas
+          Do desafio à solução em 4 passos
         </h2>
+        <p className="mt-3 max-w-2xl text-slate-600">
+          Fluxo simples, começando no passo 1 — do cadastro ao acompanhamento.
+        </p>
         <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {FLOW_STEPS.map((step) => (
+          {FLOW_STEPS.map((step, index) => (
             <li
               key={step.step}
               className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
+              {index < FLOW_STEPS.length - 1 && (
+                <span
+                  className="pointer-events-none absolute right-[-0.75rem] top-10 hidden h-px w-6 bg-brand-200 lg:block"
+                  aria-hidden
+                />
+              )}
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
                 {step.step}
               </span>

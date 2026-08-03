@@ -10,7 +10,7 @@ export const SITE = {
 export const NAV_LINKS = [
   { href: "/", label: "Início", external: false },
   { href: "/#fluxo", label: "Como funciona", external: false },
-  { href: "/#solucao", label: "Soluções que geram impacto", external: false },
+  { href: "/#solucao", label: "Soluções", external: false },
   { href: SITE.contactUrl, label: "Contato", external: true },
 ] as const;
 
