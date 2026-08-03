@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ButtonLink } from "@/components/ui/button";
+import { EmpresaCtaButton } from "@/components/landing/empresa-cta";
 import { SOLUTION_DETAILS, SOLUTIONS } from "@/lib/landing-content";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -47,7 +48,7 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             ))}
           </ul>
           <div className="mt-10 flex flex-wrap gap-3">
-            <ButtonLink href="/cadastro">Cadastrar desafio</ButtonLink>
+            <EmpresaCtaButton context="detail" />
             <ButtonLink href="/#fluxo" variant="secondary">
               Como funciona
             </ButtonLink>

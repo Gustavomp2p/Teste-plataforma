@@ -1,4 +1,4 @@
-import { ButtonLink } from "@/components/ui/button";
+import { EmpresaCtaButton } from "@/components/landing/empresa-cta";
 
 export function MidCtaSection() {
   return (
@@ -23,13 +23,7 @@ export function MidCtaSection() {
             </p>
           </div>
         </div>
-        <ButtonLink
-          href="/login?mode=signup"
-          variant="secondary"
-          className="shrink-0 !border-0 !bg-white !text-brand-700 hover:!bg-brand-50"
-        >
-          Criar conta →
-        </ButtonLink>
+        <EmpresaCtaButton context="mid" className="shrink-0" />
       </div>
     </section>
   );

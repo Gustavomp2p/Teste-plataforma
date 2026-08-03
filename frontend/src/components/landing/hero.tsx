@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/button";
+import { EmpresaCtaButton } from "@/components/landing/empresa-cta";
 import { HeroDashboardPreview } from "@/components/landing/hero-dashboard-preview";
 import { HERO } from "@/lib/landing-content";
 
@@ -14,14 +15,14 @@ export function Hero() {
           <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
             {HERO.eyebrow}
           </p>
-          <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-slate-900 sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-slate-900">
             {HERO.title}
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
             {HERO.description}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <ButtonLink href="/login?mode=signup">Criar conta</ButtonLink>
+            <EmpresaCtaButton context="hero" />
             <ButtonLink href="#solucao" variant="secondary">
               Conhecer soluções
             </ButtonLink>

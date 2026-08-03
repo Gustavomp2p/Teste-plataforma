@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SITE, NAV_LINKS } from "@/lib/constants";
 import { LANDING_IMAGES } from "@/lib/landing-content";
+import { EmpresaCtaTextLink } from "@/components/landing/empresa-cta";
 
 export function SiteFooter() {
   return (
@@ -51,9 +52,7 @@ export function SiteFooter() {
             <h3 className="text-sm font-semibold text-white">Para empresas</h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link href="/cadastro" className="hover:text-white">
-                  Cadastrar desafio
-                </Link>
+                <EmpresaCtaTextLink />
               </li>
               <li>
                 <Link href="/#solucao" className="hover:text-white">
@@ -61,8 +60,8 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/login?mode=signup" className="hover:text-white">
-                  Criar conta
+                <Link href="/login" className="hover:text-white">
+                  Entrar
                 </Link>
               </li>
             </ul>

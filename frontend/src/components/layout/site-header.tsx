@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { NAV_DASHBOARD, NAV_LINKS } from "@/lib/constants";
 import { LANDING_IMAGES } from "@/lib/landing-content";
-import { ButtonLink } from "@/components/ui/button";
 import { AuthNav } from "@/components/layout/auth-nav";
+import { EmpresaCtaButton } from "@/components/landing/empresa-cta";
 import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil } from "@/lib/api-server";
 
@@ -84,9 +84,7 @@ export function SiteHeader() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <AuthNav />
-          <ButtonLink href="/login?mode=signup" className="px-3 text-xs sm:px-5 sm:text-sm">
-            Criar conta
-          </ButtonLink>
+          <EmpresaCtaButton context="header" className="px-3 text-xs sm:px-5 sm:text-sm" />
         </div>
       </div>
     </header>

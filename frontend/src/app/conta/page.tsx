@@ -60,26 +60,16 @@ export default async function ContaPage() {
                 </ButtonLink>
               </div>
             ) : (
-              <>
-                <div className="rounded-xl border border-slate-200 bg-white p-6">
-                  <h2 className="font-semibold text-slate-900">Cadastrar demanda</h2>
-                  <p className="mt-2 text-sm text-slate-500">
-                    Envie uma nova demanda tecnológica para o programa.
-                  </p>
-                  <ButtonLink href="/cadastro" variant="primary" className="mt-4">
-                    Ir para cadastro
-                  </ButtonLink>
-                </div>
-                <div className="rounded-xl border border-slate-200 bg-white p-6">
-                  <h2 className="font-semibold text-slate-900">Consultar demandas</h2>
-                  <p className="mt-2 text-sm text-slate-500">
-                    Veja as demandas aprovadas disponíveis na plataforma.
-                  </p>
-                  <ButtonLink href="/conta/demandas" variant="primary" className="mt-4">
-                    Ver demandas
-                  </ButtonLink>
-                </div>
-              </>
+              <div className="rounded-xl border border-slate-200 bg-white p-6 sm:col-span-2">
+                <h2 className="font-semibold text-slate-900">Consultar demandas</h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  Veja as demandas aprovadas disponíveis na plataforma. O cadastro de
+                  desafios é exclusivo para contas empresa.
+                </p>
+                <ButtonLink href="/conta/demandas" variant="primary" className="mt-4">
+                  Ver demandas
+                </ButtonLink>
+              </div>
             )}
           </div>
         </main>
