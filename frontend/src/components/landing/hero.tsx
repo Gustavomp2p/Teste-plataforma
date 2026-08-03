@@ -1,7 +1,6 @@
 import { ButtonLink } from "@/components/ui/button";
 import { HeroDashboardPreview } from "@/components/landing/hero-dashboard-preview";
 import { PartnersStrip } from "@/components/landing/partners-strip";
-import { HERO_FEATURES, LANDING_IMAGES } from "@/lib/landing-content";
 import { SITE } from "@/lib/constants";
 
 export function Hero() {
@@ -25,27 +24,11 @@ export function Hero() {
             Catarina e talentos em TIC do {SITE.program}.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <ButtonLink href="#cadastro">Cadastrar desafio da empresa</ButtonLink>
+            <ButtonLink href="/cadastro">Cadastrar desafio</ButtonLink>
             <ButtonLink href="#solucao" variant="secondary">
-              Ver exemplos de soluções
+              Conhecer soluções
             </ButtonLink>
           </div>
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-            {HERO_FEATURES.map((feature) => (
-              <li
-                key={feature}
-                className="flex items-start gap-2 text-sm text-slate-600"
-              >
-                <span
-                  className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700"
-                  aria-hidden
-                >
-                  ✓
-                </span>
-                {feature}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div className="relative w-full transition-transform duration-500 hover:scale-[1.02]">

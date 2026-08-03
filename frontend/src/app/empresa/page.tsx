@@ -70,7 +70,7 @@ export default async function EmpresaPage() {
               {vinculo.mensagem ??
                 "Cadastre uma demanda com o mesmo e-mail para vincular sua empresa."}
               <div className="mt-4">
-                <ButtonLink href="/#cadastro" variant="primary">
+                <ButtonLink href="/cadastro" variant="primary">
                   Cadastrar demanda
                 </ButtonLink>
               </div>
@@ -80,7 +80,7 @@ export default async function EmpresaPage() {
           <section className="mt-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold text-slate-900">Suas demandas</h2>
-              <ButtonLink href="/#cadastro" variant="primary">
+              <ButtonLink href="/cadastro" variant="primary">
                 Nova demanda
               </ButtonLink>
             </div>

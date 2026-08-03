@@ -5,7 +5,7 @@ export function SolutionSection() {
     <section id="solucao" className="px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
-          03 · Soluções
+          02 · Soluções que geram impacto
         </p>
         <h2 className="mt-3 max-w-2xl text-3xl font-bold text-slate-900 sm:text-4xl">
           Exemplos de desafios que podem virar soluções reais

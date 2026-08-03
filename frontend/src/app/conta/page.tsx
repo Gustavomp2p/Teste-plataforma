@@ -66,7 +66,7 @@ export default async function ContaPage() {
                   <p className="mt-2 text-sm text-slate-500">
                     Envie uma nova demanda tecnológica para o programa.
                   </p>
-                  <ButtonLink href="/#cadastro" variant="primary" className="mt-4">
+                  <ButtonLink href="/cadastro" variant="primary" className="mt-4">
                     Ir para cadastro
                   </ButtonLink>
                 </div>

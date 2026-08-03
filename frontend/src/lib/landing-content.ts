@@ -106,7 +106,9 @@ export const ECOSYSTEM = [
 
 export const LANDING_IMAGES = {
   logo: "/landing/logo-bfd.png",
+  logoMark: "/landing/logo-bfd-mark.png",
   logoHeader: "/landing/logo-bfd-header.png",
+  logoBolsa: "/landing/logo-bfd-bolsa.png",
   logoHero: "/landing/logo-bfd-hero.png",
   logoFooter: "/landing/logo-bfd-footer.png",
   parceiroMcti: "/landing/parceiro-mcti.png",
