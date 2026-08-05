@@ -12,12 +12,6 @@ export const HERO_STATS = [
   { value: "210", label: "Talentos envolvidos" },
 ] as const;
 
-export const DASHBOARD_KPIS = [
-  { value: "20", label: "Projetos ativos" },
-  { value: "15", label: "Empresas cadastradas" },
-  { value: "8", label: "Demandas abertas" },
-] as const;
-
 export const DASHBOARD_STATUS = [
   { label: "Concluído", value: 35, color: "#10b981" },
   { label: "Em andamento", value: 40, color: "#2563eb" },
