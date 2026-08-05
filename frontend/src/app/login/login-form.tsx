@@ -20,7 +20,9 @@ export function LoginForm() {
   const authError = searchParams.get("error");
   const modeParam = searchParams.get("mode");
 
-  const [mode, setMode] = useState<Mode>(modeParam === "signup" ? "signup" : "login");
+  const [mode, setMode] = useState<Mode>(
+    modeParam === "signup" || authError === "google_needs_account" ? "signup" : "login",
+  );
   const [tipoConta, setTipoConta] = useState<TipoConta>("usuario");
   const [nome, setNome] = useState("");
   const [cnpj, setCnpj] = useState("");

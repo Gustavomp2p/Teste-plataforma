@@ -17,11 +17,15 @@ export async function GET(request: Request) {
         const conta = await verificarContaExistente();
         if (!conta.exists) {
           await supabase.auth.signOut();
-          return NextResponse.redirect(`${origin}/login?error=google_needs_account`);
+          return NextResponse.redirect(
+            `${origin}/login?mode=signup&error=google_needs_account`,
+          );
         }
       } catch {
         await supabase.auth.signOut();
-        return NextResponse.redirect(`${origin}/login?error=google_needs_account`);
+        return NextResponse.redirect(
+          `${origin}/login?mode=signup&error=google_needs_account`,
+        );
       }
 
       try {
