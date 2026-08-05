@@ -28,9 +28,13 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(
-    authError === "auth_callback" ? "Falha ao entrar com Google. Tente novamente." : null,
-  );
+  const [message, setMessage] = useState<string | null>(() => {
+    if (authError === "auth_callback") return "Falha ao entrar com Google. Tente novamente.";
+    if (authError === "google_needs_account") {
+      return "Crie uma conta antes de entrar com Google (usuário ou empresa).";
+    }
+    return null;
+  });
   const [success, setSuccess] = useState<string | null>(null);
 
   function callbackUrl() {
@@ -167,7 +171,7 @@ export function LoginForm() {
           </p>
         </div>
 
-        {mode !== "recover" && (mode === "login" || tipoConta === "usuario") && (
+        {mode === "login" && (
           <button
             type="button"
             disabled={loading}
@@ -196,7 +200,7 @@ export function LoginForm() {
           </button>
         )}
 
-        {mode !== "recover" && (mode === "login" || tipoConta === "usuario") && (
+        {mode === "login" && (
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200" />

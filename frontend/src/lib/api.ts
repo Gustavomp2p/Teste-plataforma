@@ -272,6 +272,13 @@ export function sincronizarPerfil(accessToken?: string | null) {
   );
 }
 
+export function verificarContaExistente(accessToken?: string | null) {
+  return request<{ exists: boolean; papel?: string }>("/auth/has-account", {
+    auth: true,
+    accessToken,
+  });
+}
+
 export function listarProjetosEmpresa(accessToken?: string | null) {
   return request<Projeto[]>("/empresa/me/projetos", { auth: true, accessToken });
 }

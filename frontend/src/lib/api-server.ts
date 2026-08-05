@@ -7,6 +7,7 @@ import {
   buscarProjeto as buscarProjetoBase,
   buscarPerfil as buscarPerfilBase,
   sincronizarPerfil as sincronizarPerfilBase,
+  verificarContaExistente as verificarContaExistenteBase,
   atualizarProjeto as atualizarProjetoBase,
   atualizarStatusProjeto as atualizarStatusProjetoBase,
   listarProjetosEmpresa as listarProjetosEmpresaBase,
@@ -54,6 +55,10 @@ export async function buscarPerfil() {
 
 export async function sincronizarPerfil() {
   return sincronizarPerfilBase(await token());
+}
+
+export async function verificarContaExistente() {
+  return verificarContaExistenteBase(await token());
 }
 
 export async function listarProjetosEmpresa() {
