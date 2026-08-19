@@ -4,6 +4,8 @@ import { getAuthUser } from "@/lib/supabase/server";
 import { buscarPerfil, buscarProjetoEmpresa, ApiError } from "@/lib/api-server";
 import { SITE } from "@/lib/constants";
 import { DemandaDetalheView } from "@/components/demandas/demanda-detalhe-view";
+import { CancelarDemandaButton } from "@/components/demandas/cancelar-demanda-button";
+import { empresaPodeCancelar } from "@/lib/status";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +54,9 @@ export default async function EmpresaDemandaDetalhePage({ params }: PageProps) {
             backLabel="Voltar ao painel"
             mostrarContatoEmpresa
           />
+          {empresaPodeCancelar(demanda.status) && (
+            <CancelarDemandaButton demandaId={demanda.id} titulo={demanda.titulo} />
+          )}
         </main>
       </div>
     );

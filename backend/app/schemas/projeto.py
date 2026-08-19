@@ -21,6 +21,27 @@ class ProjetoCreate(BaseModel):
     categoria_id: Optional[int] = None
     empresa_id: int
 
+class DemandaEmpresaCreate(BaseModel):
+    """Demanda enviada pela propria empresa autenticada.
+
+    Nao aceita ``empresa_id``: o vinculo vem da sessao, nunca do corpo da
+    requisicao. Os campos de contato sao opcionais e atualizam o cadastro
+    da empresa quando enviados.
+    """
+
+    titulo: Optional[str] = None
+    tipo_problema: str
+    descricao: str
+    tecnologias: Optional[str] = None
+    urgencia: Optional[Nivel] = None
+    categoria_id: Optional[int] = None
+    responsavel_nome: Optional[str] = None
+    telefone: Optional[str] = None
+    cidade: Optional[str] = None
+    segmento: Optional[str] = None
+    aceita_contato: Optional[bool] = None
+
+
 class ProjetoUpdate(BaseModel):
     status: Optional[StatusProjeto] = None
     complexidade: Optional[Nivel] = None

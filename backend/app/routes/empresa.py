@@ -4,11 +4,25 @@ from sqlalchemy.orm import Session, joinedload
 from app.database import get_db
 from app.deps.admin import UserContext, get_current_empresa
 from app.models.empresa import Empresa
-from app.models.projeto import Projeto
+from app.models.projeto import Projeto, StatusProjeto
 from app.schemas.empresa import EmpresaResponse
-from app.schemas.projeto import ProjetoDetalheResponse, ProjetoResponse
+from app.schemas.projeto import (
+    DemandaEmpresaCreate,
+    ProjetoDetalheResponse,
+    ProjetoResponse,
+)
 
 router = APIRouter()
+
+# Status em que a empresa ainda pode cancelar sozinha. Depois de aprovada para
+# uma squad ha alunos trabalhando na demanda, entao o cancelamento passa a ser
+# conversado com a equipe BFD.
+STATUS_CANCELAVEIS = {
+    StatusProjeto.novo.value,
+    StatusProjeto.em_analise.value,
+    StatusProjeto.em_contato.value,
+    StatusProjeto.reprovado.value,
+}
 
 
 def _empresa_id_da_conta(user: UserContext, db: Session) -> int | None:
@@ -16,6 +30,13 @@ def _empresa_id_da_conta(user: UserContext, db: Session) -> int | None:
         return user.empresa_id
     empresa = db.query(Empresa).filter(Empresa.email == user.email).first()
     return empresa.id if empresa else None
+
+
+def _sem_observacoes(projeto: Projeto) -> ProjetoResponse:
+    """Resposta da demanda sem o campo interno da equipe BFD."""
+    return ProjetoResponse.model_validate(projeto).model_copy(
+        update={"observacoes_internas": None}
+    )
 
 
 @router.get("/me")
@@ -31,7 +52,7 @@ def perfil_empresa(
     if not empresa:
         return {
             "vinculada": False,
-            "mensagem": "Nenhuma empresa cadastrada com este e-mail. Envie uma demanda na landing.",
+            "mensagem": "Nenhuma empresa cadastrada com este e-mail. Informe o CNPJ no cadastro da conta.",
             "empresa": None,
         }
     return {"vinculada": True, "empresa": EmpresaResponse.model_validate(empresa)}
@@ -52,10 +73,52 @@ def listar_projetos_empresa(
         .order_by(Projeto.criado_em.desc())
         .all()
     )
-    return [
-        ProjetoResponse.model_validate(p).model_copy(update={"observacoes_internas": None})
-        for p in projetos
-    ]
+    return [_sem_observacoes(p) for p in projetos]
+
+
+@router.post("/me/demandas", response_model=ProjetoResponse, status_code=201)
+def criar_demanda_empresa(
+    dados: DemandaEmpresaCreate,
+    user: UserContext = Depends(get_current_empresa),
+    db: Session = Depends(get_db),
+):
+    """Cria uma demanda ja vinculada a empresa da sessao.
+
+    O ``empresa_id`` vem da conta autenticada, nunca do corpo da requisicao —
+    era por isso que demandas novas apareciam sob outra empresa e sumiam do
+    painel.
+    """
+    empresa_id = _empresa_id_da_conta(user, db)
+    if not empresa_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Conta sem empresa vinculada. Informe um CNPJ valido no cadastro da conta.",
+        )
+
+    empresa = db.query(Empresa).filter(Empresa.id == empresa_id).first()
+    if not empresa:
+        raise HTTPException(status_code=404, detail="Empresa nao encontrada.")
+
+    # Campos de contato enviados no formulario mantem o cadastro atualizado.
+    for campo in ("responsavel_nome", "telefone", "cidade", "segmento", "aceita_contato"):
+        valor = getattr(dados, campo)
+        if valor is not None and valor != "":
+            setattr(empresa, campo, valor)
+
+    projeto = Projeto(
+        titulo=(dados.titulo or "").strip() or dados.tipo_problema,
+        descricao=dados.descricao,
+        tecnologias=dados.tecnologias or None,
+        tipo_problema=dados.tipo_problema,
+        urgencia=dados.urgencia.value if dados.urgencia else None,
+        categoria_id=dados.categoria_id,
+        empresa_id=empresa_id,
+        status=StatusProjeto.novo.value,
+    )
+    db.add(projeto)
+    db.commit()
+    db.refresh(projeto)
+    return _sem_observacoes(projeto)
 
 
 @router.get("/me/projetos/{projeto_id}", response_model=ProjetoDetalheResponse)
@@ -64,13 +127,13 @@ def buscar_projeto_empresa(
     user: UserContext = Depends(get_current_empresa),
     db: Session = Depends(get_db),
 ):
-    """Detalhe de uma demanda pertencente à empresa autenticada.
+    """Detalhe de uma demanda pertencente a empresa autenticada.
 
-    Oculta observações internas (campo exclusivo da equipe BFD).
+    Oculta observacoes internas (campo exclusivo da equipe BFD).
     """
     empresa_id = _empresa_id_da_conta(user, db)
     if not empresa_id:
-        raise HTTPException(status_code=404, detail="Empresa não vinculada a esta conta.")
+        raise HTTPException(status_code=404, detail="Empresa nao vinculada a esta conta.")
 
     projeto = (
         db.query(Projeto)
@@ -79,7 +142,41 @@ def buscar_projeto_empresa(
         .first()
     )
     if not projeto:
-        raise HTTPException(status_code=404, detail="Demanda não encontrada.")
+        raise HTTPException(status_code=404, detail="Demanda nao encontrada.")
 
     detalhe = ProjetoDetalheResponse.model_validate(projeto)
     return detalhe.model_copy(update={"observacoes_internas": None})
+
+
+@router.patch("/me/projetos/{projeto_id}/cancelar", response_model=ProjetoResponse)
+def cancelar_demanda_empresa(
+    projeto_id: int,
+    user: UserContext = Depends(get_current_empresa),
+    db: Session = Depends(get_db),
+):
+    """Cancela uma demanda da propria empresa."""
+    empresa_id = _empresa_id_da_conta(user, db)
+    if not empresa_id:
+        raise HTTPException(status_code=404, detail="Empresa nao vinculada a esta conta.")
+
+    projeto = (
+        db.query(Projeto)
+        .filter(Projeto.id == projeto_id, Projeto.empresa_id == empresa_id)
+        .first()
+    )
+    if not projeto:
+        raise HTTPException(status_code=404, detail="Demanda nao encontrada.")
+
+    if projeto.status == StatusProjeto.cancelado.value:
+        raise HTTPException(status_code=409, detail="Esta demanda ja foi cancelada.")
+
+    if projeto.status not in STATUS_CANCELAVEIS:
+        raise HTTPException(
+            status_code=409,
+            detail="Demanda ja aprovada para uma squad. Fale com a equipe BFD para cancelar.",
+        )
+
+    projeto.status = StatusProjeto.cancelado.value
+    db.commit()
+    db.refresh(projeto)
+    return _sem_observacoes(projeto)

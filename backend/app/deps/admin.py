@@ -5,9 +5,11 @@ from uuid import UUID
 
 import httpx
 from fastapi import Depends, Header, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.auth.supabase_config import get_supabase_url
+from app.cnpj import cnpj_digitos, cnpj_valido, formatar_cnpj
 from app.database import get_db
 from app.models.usuario_admin import PAPEIS_ADMIN, PapelAdmin, UsuarioAdmin
 from app.models.empresa import Empresa
@@ -97,27 +99,57 @@ def _papel_from_auth(auth_user: dict) -> str:
     return PapelAdmin.USUARIO
 
 
-def _cnpj_digits(value: str | None) -> str:
-    if not value:
-        return ""
-    return "".join(c for c in value if c.isdigit())
-
-
 def _cnpj_from_auth(auth_user: dict) -> str | None:
     meta = auth_user.get("user_metadata") or {}
     cnpj = meta.get("cnpj")
     return cnpj if isinstance(cnpj, str) and cnpj.strip() else None
 
 
-def _vincular_empresa(db: Session, email: str, cnpj: str | None = None) -> Optional[int]:
-    digits = _cnpj_digits(cnpj)
+def _buscar_empresa(db: Session, email: str, cnpj: str | None = None) -> Optional[Empresa]:
+    """Empresa ja cadastrada para este CNPJ ou e-mail."""
+    digits = cnpj_digitos(cnpj)
     if digits:
-        for empresa in db.query(Empresa).all():
-            if _cnpj_digits(empresa.cnpj) == digits:
-                return empresa.id
+        # Caminho rapido: o CNPJ e gravado normalizado (00.000.000/0000-00).
+        empresa = db.query(Empresa).filter(Empresa.cnpj == formatar_cnpj(cnpj)).first()
+        if empresa:
+            return empresa
+        # Legado: linhas gravadas antes da normalizacao podem ter outra mascara.
+        for candidata in db.query(Empresa).all():
+            if cnpj_digitos(candidata.cnpj) == digits:
+                return candidata
 
-    empresa = db.query(Empresa).filter(Empresa.email == email).first()
-    return empresa.id if empresa else None
+    return db.query(Empresa).filter(Empresa.email == email).first()
+
+
+def _vincular_ou_criar_empresa(db: Session, auth_user: dict, nome: str, email: str) -> Optional[int]:
+    """Resolve a empresa da conta, criando o cadastro quando ainda nao existe.
+
+    Sem isso a conta empresa ficava sem ``empresa_id`` ate alguem enviar uma
+    demanda pelo formulario publico — e as demandas criadas depois caiam em
+    outra empresa, sumindo do painel.
+    """
+    cnpj = _cnpj_from_auth(auth_user)
+
+    empresa = _buscar_empresa(db, email, cnpj)
+    if empresa:
+        return empresa.id
+
+    # Sem CNPJ valido nao da para criar (coluna NOT NULL/UNIQUE): a conta fica
+    # sem vinculo e o painel mostra o aviso de empresa nao vinculada.
+    if not cnpj_valido(cnpj):
+        return None
+
+    empresa = Empresa(nome=nome or email.split("@")[0], cnpj=formatar_cnpj(cnpj), email=email)
+    db.add(empresa)
+    try:
+        db.commit()
+    except IntegrityError:
+        # Corrida entre duas requisicoes da mesma conta: relê o que ficou gravado.
+        db.rollback()
+        existente = _buscar_empresa(db, email, cnpj)
+        return existente.id if existente else None
+    db.refresh(empresa)
+    return empresa.id
 
 
 def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
@@ -135,7 +167,7 @@ def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
         if not perfil.ativo:
             raise HTTPException(status_code=403, detail="Conta desativada.")
         if perfil.papel == PapelAdmin.EMPRESA and not perfil.empresa_id:
-            empresa_id = _vincular_empresa(db, email, _cnpj_from_auth(auth_user))
+            empresa_id = _vincular_ou_criar_empresa(db, auth_user, perfil.nome, email)
             if empresa_id:
                 perfil.empresa_id = empresa_id
                 db.commit()
@@ -143,11 +175,15 @@ def _ensure_profile(db: Session, auth_user: dict) -> UsuarioAdmin:
         return perfil
 
     papel = _papel_from_auth(auth_user)
-    cnpj = _cnpj_from_auth(auth_user) if papel == PapelAdmin.EMPRESA else None
-    empresa_id = _vincular_empresa(db, email, cnpj) if papel == PapelAdmin.EMPRESA else None
+    nome = _nome_from_auth(auth_user)
+    empresa_id = (
+        _vincular_ou_criar_empresa(db, auth_user, nome, email)
+        if papel == PapelAdmin.EMPRESA
+        else None
+    )
 
     perfil = UsuarioAdmin(
-        nome=_nome_from_auth(auth_user),
+        nome=nome,
         email=email,
         auth_user_id=auth_id,
         papel=papel,

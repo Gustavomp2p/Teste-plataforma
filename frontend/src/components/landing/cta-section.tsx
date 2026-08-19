@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { SEGMENTOS, TIPOS_PROBLEMA } from "@/lib/status";
 
@@ -10,6 +11,7 @@ const inputClass =
 type Feedback = { type: "success" | "error"; message: string } | null;
 
 export function CtaSection() {
+  const router = useRouter();
   const [enviando, setEnviando] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
 
@@ -19,12 +21,10 @@ export function CtaSection() {
 
     const form = event.currentTarget;
     const data = new FormData(form);
+    // Nome da empresa, CNPJ e e-mail vem da conta autenticada — nao do formulario.
     const payload = {
-      nome: String(data.get("nome") ?? ""),
-      cnpj: String(data.get("cnpj") ?? ""),
       responsavel_nome: String(data.get("responsavel_nome") ?? ""),
       telefone: String(data.get("telefone") ?? ""),
-      email: String(data.get("email") ?? ""),
       cidade: String(data.get("cidade") ?? ""),
       segmento: String(data.get("segmento") ?? ""),
       tipo_problema: String(data.get("tipo_problema") ?? ""),
@@ -49,6 +49,8 @@ export function CtaSection() {
         message: result.message ?? "Demanda cadastrada com sucesso!",
       });
       form.reset();
+      // Painel busca as demandas no servidor: sem refresh a nova nao aparece.
+      router.refresh();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -69,19 +71,11 @@ export function CtaSection() {
           Conte qual desafio sua empresa gostaria de resolver
         </h2>
         <p className="mt-3 text-sm text-slate-600">
-          Preencha o formulário abaixo. Sua demanda será qualificada pela equipe do
+          A demanda entra vinculada à sua empresa e será qualificada pela equipe do
           programa Bolsa Futuro Digital.
         </p>
 
         <form className="mt-8 grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
-          <label className="sm:col-span-1">
-            <span className="mb-1 block text-sm font-medium text-slate-700">Nome da empresa</span>
-            <input name="nome" required className={inputClass} placeholder="Sua empresa" disabled={enviando} />
-          </label>
-          <label className="sm:col-span-1">
-            <span className="mb-1 block text-sm font-medium text-slate-700">CNPJ</span>
-            <input name="cnpj" required className={inputClass} placeholder="00.000.000/0000-00" disabled={enviando} />
-          </label>
           <label className="sm:col-span-1">
             <span className="mb-1 block text-sm font-medium text-slate-700">Nome do responsável</span>
             <input name="responsavel_nome" required className={inputClass} placeholder="Nome completo" disabled={enviando} />
@@ -89,10 +83,6 @@ export function CtaSection() {
           <label className="sm:col-span-1">
             <span className="mb-1 block text-sm font-medium text-slate-700">WhatsApp</span>
             <input name="telefone" type="tel" className={inputClass} placeholder="(00) 00000-0000" disabled={enviando} />
-          </label>
-          <label className="sm:col-span-1">
-            <span className="mb-1 block text-sm font-medium text-slate-700">E-mail</span>
-            <input name="email" type="email" required className={inputClass} placeholder="contato@empresa.com" disabled={enviando} />
           </label>
           <label className="sm:col-span-1">
             <span className="mb-1 block text-sm font-medium text-slate-700">Cidade</span>
@@ -107,7 +97,7 @@ export function CtaSection() {
               ))}
             </select>
           </label>
-          <label className="sm:col-span-1">
+          <label className="sm:col-span-2">
             <span className="mb-1 block text-sm font-medium text-slate-700">Tipo de problema</span>
             <select name="tipo_problema" required className={inputClass} defaultValue="" disabled={enviando}>
               <option value="" disabled>Selecione o tipo</option>
@@ -166,8 +156,8 @@ export function CtaSection() {
             <Button type="submit" className="justify-center" disabled={enviando}>
               {enviando ? "Enviando..." : "Cadastrar minha demanda"}
             </Button>
-            <ButtonLink href="/dashboard" variant="secondary" className="justify-center">
-              Acessar painel
+            <ButtonLink href="/empresa" variant="secondary" className="justify-center">
+              Ver minhas demandas
             </ButtonLink>
           </div>
         </form>
