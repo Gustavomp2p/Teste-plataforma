@@ -11,6 +11,7 @@ class StatusProjeto(str, enum.Enum):
     aprovado_squad = "aprovado_squad"
     reprovado = "reprovado"
     estruturado = "estruturado"
+    cancelado = "cancelado"
 
 class Nivel(str, enum.Enum):
     baixa = "baixa"

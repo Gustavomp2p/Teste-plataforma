@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/constants";
 import { mapAuthError } from "@/lib/auth-errors";
 import { createClient } from "@/lib/supabase/client";
+import { CNPJ_TAMANHO_FORMATADO, cnpjValido, mascararCnpj } from "@/lib/cnpj";
 
 type Mode = "login" | "signup" | "recover";
 type TipoConta = "usuario" | "empresa";
@@ -116,8 +117,8 @@ export function LoginForm() {
     const supabase = createClient();
 
     if (mode === "signup") {
-      if (tipoConta === "empresa" && !cnpj.trim()) {
-        setMessage("Informe o CNPJ da empresa.");
+      if (tipoConta === "empresa" && !cnpjValido(cnpj)) {
+        setMessage("Informe um CNPJ valido (14 digitos).");
         setLoading(false);
         return;
       }
@@ -315,13 +316,14 @@ export function LoginForm() {
                       type="text"
                       required
                       inputMode="numeric"
+                      maxLength={CNPJ_TAMANHO_FORMATADO}
                       placeholder="00.000.000/0000-00"
                       value={cnpj}
-                      onChange={(e) => setCnpj(e.target.value)}
+                      onChange={(e) => setCnpj(mascararCnpj(e.target.value))}
                       className={inputClass}
                     />
                     <p className="mt-1 text-xs text-slate-500">
-                      Vincula automaticamente se ja houver demanda com este CNPJ.
+                      14 digitos. Vincula automaticamente se ja houver cadastro com este CNPJ.
                     </p>
                   </div>
                 )}

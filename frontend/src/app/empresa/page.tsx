@@ -10,6 +10,8 @@ import {
 import { PAPEL_LABEL } from "@/lib/auth";
 import { SITE } from "@/lib/constants";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { CancelarDemandaButton } from "@/components/demandas/cancelar-demanda-button";
+import { empresaPodeCancelar } from "@/lib/status";
 import { ButtonLink } from "@/components/ui/button";
 import type { StatusProjeto } from "@/lib/api";
 
@@ -89,17 +91,22 @@ export default async function EmpresaPage() {
             ) : (
               <ul className="mt-4 space-y-3">
                 {projetos.map((p) => (
-                  <li key={p.id}>
-                    <Link
-                      href={`/empresa/demandas/${p.id}`}
-                      className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-brand-300 hover:shadow-md"
-                    >
+                  <li
+                    key={p.id}
+                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-brand-300 hover:shadow-md"
+                  >
+                    <Link href={`/empresa/demandas/${p.id}`} className="block">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <h3 className="font-medium text-slate-900">{p.titulo}</h3>
                         <StatusBadge status={p.status as StatusProjeto} />
                       </div>
                       <p className="mt-2 line-clamp-2 text-sm text-slate-600">{p.descricao}</p>
                     </Link>
+                    {empresaPodeCancelar(p.status) && (
+                      <div className="mt-3 border-t border-slate-100 pt-3">
+                        <CancelarDemandaButton demandaId={p.id} titulo={p.titulo} compacto />
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>

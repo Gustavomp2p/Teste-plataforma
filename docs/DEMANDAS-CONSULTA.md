@@ -34,6 +34,8 @@ Permissões de página:
 | GET | `/demandas/{id}` | usuário ou admin autenticado | Detalhe sanitizado (sem `observacoes_internas`, sem e-mail/telefone da empresa). Se status não liberado → **404**. |
 | GET | `/empresa/me/projetos` | empresa | Lista só demandas da empresa (já existia). |
 | GET | `/empresa/me/projetos/{id}` | empresa | Detalhe da demanda **própria**; `observacoes_internas` sempre `null` na resposta. |
+| POST | `/empresa/me/demandas` | empresa | Cria demanda já vinculada à empresa da sessão. Não aceita `empresa_id` no corpo. |
+| PATCH | `/empresa/me/projetos/{id}/cancelar` | empresa | Cancela demanda própria (status → `cancelado`). |
 
 Schemas novos: `DemandaPublicaResponse`, `DemandaPublicaDetalheResponse`, `EmpresaResumoPublico` em `backend/app/schemas/projeto.py`.
 
@@ -86,3 +88,41 @@ Esperado: `/demandas/`, `/demandas/{demanda_id}`, `/empresa/me/projetos/{projeto
 5. **Lista da empresa e observações internas:** `GET /empresa/me/projetos` agora zera `observacoes_internas` na resposta (mesmo schema `ProjetoResponse`). O ideal a médio prazo é um schema dedicado sem o campo.
 6. **Catálogo pode ficar vazio em produção** até a equipe mover demandas para `aprovado_squad` / `estruturado`.
 7. **Backend e frontend desacoplados no deploy:** se só o front subir, `/conta/demandas` quebra até o Render atualizar.
+
+---
+
+## Cadastro e cancelamento pela empresa
+
+O formulário de demanda (`/cadastro`) é exclusivo de contas empresa e **não
+coleta mais nome da empresa, CNPJ nem e-mail** — esses dados vêm da conta
+autenticada. Antes o formulário chamava `POST /empresas/` a cada envio, o que
+criava uma empresa nova (ou falhava com "CNPJ ou e-mail já cadastrado") e fazia
+a demanda cair sob outra empresa, sumindo do painel.
+
+O vínculo da conta com a empresa é resolvido em
+`_vincular_ou_criar_empresa` (`backend/app/deps/admin.py`): procura por CNPJ,
+depois por e-mail, e **cria o cadastro** quando nenhum existe. Contas empresa
+sem CNPJ válido ficam sem vínculo e o painel exibe o aviso correspondente.
+
+### Cancelamento
+
+A empresa cancela a própria demanda enquanto ela ainda não foi aprovada para uma
+squad — `STATUS_CANCELAVEIS` em `backend/app/routes/empresa.py`:
+
+`novo`, `em_analise`, `em_contato`, `reprovado`
+
+Em `aprovado_squad` e `estruturado` há alunos trabalhando na demanda, então o
+cancelamento passa a ser conversado com a equipe BFD (**409** com mensagem
+orientando o contato). Cancelar duas vezes também devolve **409**.
+
+O botão aparece no painel (`/empresa`) e no detalhe (`/empresa/demandas/[id]`),
+controlado por `empresaPodeCancelar` em `frontend/src/lib/status.ts`.
+
+### Teste
+
+```bash
+cd backend && python scripts/test_demandas_empresa.py
+```
+
+Sobe a API em SQLite temporário com o Supabase mockado e verifica o fluxo
+completo, incluindo o isolamento entre empresas.

@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { ApiError, criarEmpresa, criarProjeto } from "@/lib/api";
+import { ApiError, criarDemandaEmpresa } from "@/lib/api-server";
+import { getAuthUser } from "@/lib/supabase/server";
 import type { Nivel } from "@/lib/api";
 
 type CadastroPayload = {
-  nome?: string;
-  cnpj?: string;
-  email?: string;
   telefone?: string;
   responsavel_nome?: string;
   cidade?: string;
@@ -16,7 +14,6 @@ type CadastroPayload = {
   descricao?: string;
   tecnologias?: string;
   urgencia?: string;
-  categoria_slug?: string;
 };
 
 function texto(valor: unknown): string {
@@ -32,6 +29,16 @@ function bool(valor: unknown): boolean {
 const URGENCIAS = new Set(["baixa", "media", "alta"]);
 
 export async function POST(req: Request) {
+  // Nome, CNPJ e e-mail saem da conta da empresa — o formulario nao os coleta
+  // mais, senao cada envio criava uma empresa nova e a demanda sumia do painel.
+  const user = await getAuthUser();
+  if (!user) {
+    return NextResponse.json(
+      { message: "Entre com a conta da sua empresa para cadastrar uma demanda." },
+      { status: 401 },
+    );
+  }
+
   let payload: CadastroPayload;
   try {
     payload = await req.json();
@@ -39,24 +46,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Requisição inválida." }, { status: 400 });
   }
 
-  const nome = texto(payload.nome);
-  const cnpj = texto(payload.cnpj);
-  const email = texto(payload.email);
   const telefone = texto(payload.telefone);
   const responsavel_nome = texto(payload.responsavel_nome);
   const cidade = texto(payload.cidade);
   const segmento = texto(payload.segmento);
   const tipo_problema = texto(payload.tipo_problema);
-  const titulo = texto(payload.titulo) || tipo_problema || "Demanda empresarial";
+  const titulo = texto(payload.titulo) || tipo_problema;
   const descricao = texto(payload.descricao);
   const tecnologias = texto(payload.tecnologias);
   const urgenciaRaw = texto(payload.urgencia);
   const urgencia = URGENCIAS.has(urgenciaRaw) ? (urgenciaRaw as Nivel) : null;
 
   const faltando: string[] = [];
-  if (!nome) faltando.push("nome da empresa");
-  if (!cnpj) faltando.push("CNPJ");
-  if (!email) faltando.push("e-mail");
   if (!responsavel_nome) faltando.push("nome do responsável");
   if (!cidade) faltando.push("cidade");
   if (!segmento) faltando.push("segmento");
@@ -71,32 +72,23 @@ export async function POST(req: Request) {
   }
 
   try {
-    const empresa = await criarEmpresa({
-      nome,
-      cnpj,
-      email,
-      telefone: telefone || null,
+    const projeto = await criarDemandaEmpresa({
+      titulo,
+      tipo_problema,
+      descricao,
+      tecnologias: tecnologias || null,
+      urgencia,
       responsavel_nome,
+      telefone: telefone || null,
       cidade,
       segmento,
       aceita_contato: bool(payload.aceita_contato),
-      descricao: descricao || null,
-    });
-
-    const projeto = await criarProjeto({
-      titulo,
-      descricao,
-      tecnologias: tecnologias || null,
-      tipo_problema,
-      urgencia,
-      empresa_id: empresa.id,
     });
 
     return NextResponse.json(
       {
         message:
           "Demanda registrada com sucesso! Nossa equipe entrará em contato para qualificar a oportunidade.",
-        empresa_id: empresa.id,
         projeto_id: projeto.id,
       },
       { status: 201 },

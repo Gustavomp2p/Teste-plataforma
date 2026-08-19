@@ -34,6 +34,10 @@ usuarios_admin (painel — login futuro)
 ### Status do projeto
 `novo` → `em_analise` → `em_contato` → `aprovado_squad` / `reprovado` → `estruturado`
 
+`cancelado`: encerrado pela própria empresa (só antes de `aprovado_squad`).
+
+A coluna `status` é `VARCHAR(30)` sem CHECK, então o novo valor não exige migration.
+
 ### categorias (seed)
 Automação, Sistema web, App mobile, Dados e IA, Outro.
 

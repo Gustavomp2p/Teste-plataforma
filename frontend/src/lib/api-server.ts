@@ -15,6 +15,9 @@ import {
   listarDemandasDisponiveis as listarDemandasDisponiveisBase,
   buscarDemandaDisponivel as buscarDemandaDisponivelBase,
   buscarEmpresaVinculada as buscarEmpresaVinculadaBase,
+  criarDemandaEmpresa as criarDemandaEmpresaBase,
+  cancelarDemandaEmpresa as cancelarDemandaEmpresaBase,
+  type DemandaEmpresaInput,
   type ProjetoFiltros,
   type DemandaFiltros,
   type ProjetoUpdateInput,
@@ -67,6 +70,14 @@ export async function listarProjetosEmpresa() {
 
 export async function buscarProjetoEmpresa(id: number) {
   return buscarProjetoEmpresaBase(id, await token());
+}
+
+export async function criarDemandaEmpresa(data: DemandaEmpresaInput) {
+  return criarDemandaEmpresaBase(data, await token());
+}
+
+export async function cancelarDemandaEmpresa(id: number) {
+  return cancelarDemandaEmpresaBase(id, await token());
 }
 
 export async function listarDemandasDisponiveis(filtros: DemandaFiltros = {}) {

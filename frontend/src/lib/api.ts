@@ -8,7 +8,8 @@ export type StatusProjeto =
   | "em_contato"
   | "aprovado_squad"
   | "reprovado"
-  | "estruturado";
+  | "estruturado"
+  | "cancelado";
 
 export type Nivel = "baixa" | "media" | "alta";
 
@@ -83,6 +84,21 @@ export type ProjetoInput = {
   urgencia?: Nivel | null;
   categoria_id?: number | null;
   empresa_id: number;
+};
+
+/** Demanda enviada pela propria empresa: o vinculo vem da sessao, sem empresa_id. */
+export type DemandaEmpresaInput = {
+  titulo?: string | null;
+  tipo_problema: string;
+  descricao: string;
+  tecnologias?: string | null;
+  urgencia?: Nivel | null;
+  categoria_id?: number | null;
+  responsavel_nome?: string | null;
+  telefone?: string | null;
+  cidade?: string | null;
+  segmento?: string | null;
+  aceita_contato?: boolean;
 };
 
 export type ProjetoUpdateInput = {
@@ -285,6 +301,23 @@ export function listarProjetosEmpresa(accessToken?: string | null) {
 
 export function buscarProjetoEmpresa(id: number, accessToken?: string | null) {
   return request<ProjetoDetalhe>(`/empresa/me/projetos/${id}`, { auth: true, accessToken });
+}
+
+export function criarDemandaEmpresa(data: DemandaEmpresaInput, accessToken?: string | null) {
+  return request<Projeto>("/empresa/me/demandas", {
+    method: "POST",
+    body: data,
+    auth: true,
+    accessToken,
+  });
+}
+
+export function cancelarDemandaEmpresa(id: number, accessToken?: string | null) {
+  return request<Projeto>(`/empresa/me/projetos/${id}/cancelar`, {
+    method: "PATCH",
+    auth: true,
+    accessToken,
+  });
 }
 
 export function listarDemandasDisponiveis(filtros: DemandaFiltros = {}, accessToken?: string | null) {

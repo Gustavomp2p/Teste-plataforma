@@ -7,6 +7,7 @@ export const STATUS_LABEL: Record<StatusProjeto, string> = {
   aprovado_squad: "Aprovado para squad",
   reprovado: "Reprovado",
   estruturado: "Estruturado",
+  cancelado: "Cancelada",
 };
 
 export const STATUS_BADGE: Record<StatusProjeto, string> = {
@@ -16,6 +17,7 @@ export const STATUS_BADGE: Record<StatusProjeto, string> = {
   aprovado_squad: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
   reprovado: "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200",
   estruturado: "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200",
+  cancelado: "bg-slate-200 text-slate-600 ring-1 ring-inset ring-slate-300",
 };
 
 export const STATUS_OPTIONS: StatusProjeto[] = [
@@ -25,7 +27,20 @@ export const STATUS_OPTIONS: StatusProjeto[] = [
   "aprovado_squad",
   "reprovado",
   "estruturado",
+  "cancelado",
 ];
+
+/** Espelha STATUS_CANCELAVEIS em backend/app/routes/empresa.py. */
+export const STATUS_CANCELAVEIS_EMPRESA: StatusProjeto[] = [
+  "novo",
+  "em_analise",
+  "em_contato",
+  "reprovado",
+];
+
+export function empresaPodeCancelar(status: StatusProjeto | string): boolean {
+  return STATUS_CANCELAVEIS_EMPRESA.includes(status as StatusProjeto);
+}
 
 export const NIVEL_LABEL: Record<string, string> = {
   baixa: "Baixa",
