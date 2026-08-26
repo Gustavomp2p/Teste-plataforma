@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SITE, NAV_LINKS } from "@/lib/constants";
+import { SITE, NAV_LINKS, NAV_SECUNDARIO } from "@/lib/constants";
 import { LANDING_IMAGES } from "@/lib/landing-content";
 import { EmpresaCtaTextLink } from "@/components/landing/empresa-cta";
 
@@ -64,6 +64,17 @@ export function SiteFooter() {
                   Entrar
                 </Link>
               </li>
+            </ul>
+
+            <h3 className="mt-8 text-sm font-semibold text-white">Sobre a plataforma</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              {NAV_SECUNDARIO.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="hover:text-white">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
