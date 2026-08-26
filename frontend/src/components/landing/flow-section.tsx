@@ -1,3 +1,4 @@
+import { ButtonLink } from "@/components/ui/button";
 import { FLOW_STEPS } from "@/lib/landing-content";
 
 export function FlowSection() {
@@ -10,8 +11,19 @@ export function FlowSection() {
         <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
           Do desafio à solução em 4 passos
         </h2>
-        <p className="mt-3 max-w-2xl text-slate-600">
-          Fluxo simples, começando no passo 1 — do cadastro ao acompanhamento.
+        <div className="mt-3 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-2xl text-slate-600">
+            Fluxo simples, começando no passo 1 — do cadastro ao acompanhamento.
+          </p>
+          <ButtonLink href="/tutorial" className="shrink-0">
+            Acessar
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </ButtonLink>
+        </div>
+        <p className="mt-2 text-sm text-slate-500">
+          Tutorial completo de utilização da plataforma, passo a passo.
         </p>
         <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {FLOW_STEPS.map((step, index) => (

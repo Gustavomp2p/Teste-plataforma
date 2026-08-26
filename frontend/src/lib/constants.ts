@@ -14,6 +14,12 @@ export const NAV_LINKS = [
   { href: SITE.contactUrl, label: "Contato", external: true },
 ] as const;
 
+/** Links institucionais exibidos apenas no rodapé. */
+export const NAV_SECUNDARIO = [
+  { href: "/tutorial", label: "Tutorial de utilização" },
+  { href: "/creditos", label: "Créditos do projeto" },
+] as const;
+
 /** Visível apenas para admin autenticado. */
 export const NAV_DASHBOARD = { href: "/dashboard", label: "Dashboard" } as const;
 
