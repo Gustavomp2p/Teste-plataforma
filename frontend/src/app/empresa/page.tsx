@@ -93,17 +93,22 @@ export default async function EmpresaPage() {
                 {projetos.map((p) => (
                   <li
                     key={p.id}
-                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-brand-300 hover:shadow-md"
+                    className="relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-brand-300 hover:shadow-md"
                   >
                     <Link href={`/empresa/demandas/${p.id}`} className="block">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div
+                        className={`flex flex-wrap items-center justify-between gap-2 ${
+                          empresaPodeCancelar(p.status) ? "pr-9" : ""
+                        }`}
+                      >
                         <h3 className="font-medium text-slate-900">{p.titulo}</h3>
                         <StatusBadge status={p.status as StatusProjeto} />
                       </div>
                       <p className="mt-2 line-clamp-2 text-sm text-slate-600">{p.descricao}</p>
                     </Link>
+                    {/* Fora do Link: botao dentro de âncora nao é HTML válido. */}
                     {empresaPodeCancelar(p.status) && (
-                      <div className="mt-3 border-t border-slate-100 pt-3">
+                      <div className="absolute right-3 top-3">
                         <CancelarDemandaButton demandaId={p.id} titulo={p.titulo} compacto />
                       </div>
                     )}

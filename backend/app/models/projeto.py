@@ -13,6 +13,18 @@ class StatusProjeto(str, enum.Enum):
     estruturado = "estruturado"
     cancelado = "cancelado"
 
+# Motivos que a empresa pode escolher ao cancelar. Espelha MOTIVOS_CANCELAMENTO
+# em frontend/src/lib/status.ts.
+MOTIVOS_CANCELAMENTO = (
+    "Resolvido internamente",
+    "Sem orçamento no momento",
+    "Não é mais prioridade",
+    "Prazo não atende",
+    "Cadastrei por engano / duplicada",
+    "Outro",
+)
+
+
 class Nivel(str, enum.Enum):
     baixa = "baixa"
     media = "media"
@@ -31,6 +43,9 @@ class Projeto(Base):
     complexidade = Column(String(20))
     prioridade = Column(String(20))
     observacoes_internas = Column(Text)
+    cancelamento_motivo = Column(String(80))
+    cancelamento_observacao = Column(Text)
+    cancelado_em = Column(DateTime(timezone=True))
     briefing_contexto = Column(Text)
     briefing_objetivo = Column(Text)
     briefing_escopo = Column(Text)

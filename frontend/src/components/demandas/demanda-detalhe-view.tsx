@@ -29,6 +29,8 @@ export type DemandaDetalheViewProps = {
   briefing_escopo?: string | null;
   briefing_requisitos?: string | null;
   briefing_resultado?: string | null;
+  cancelamento_motivo?: string | null;
+  cancelamento_observacao?: string | null;
   empresa?: EmpresaInfo | null;
   categoria?: CategoriaInfo | null;
   backHref: string;
@@ -60,6 +62,8 @@ export function DemandaDetalheView({
   briefing_escopo,
   briefing_requisitos,
   briefing_resultado,
+  cancelamento_motivo,
+  cancelamento_observacao,
   empresa,
   categoria,
   backHref,
@@ -128,6 +132,26 @@ export function DemandaDetalheView({
           )}
         </section>
       </div>
+
+      {cancelamento_motivo && (
+        <section className="rounded-xl border border-red-200 bg-red-50 p-6">
+          <h2 className="text-lg font-semibold text-red-900">Cancelamento</h2>
+          <dl className="mt-4 space-y-3 text-sm">
+            <div>
+              <dt className="text-red-500">Motivo</dt>
+              <dd className="mt-1 text-red-900">{cancelamento_motivo}</dd>
+            </div>
+            {cancelamento_observacao && (
+              <div>
+                <dt className="text-red-500">Observação</dt>
+                <dd className="mt-1 whitespace-pre-line text-red-900">
+                  {cancelamento_observacao}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
 
       {briefing.length > 0 && (
         <section className="rounded-xl border border-slate-200 bg-white p-6">
