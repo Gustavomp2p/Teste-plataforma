@@ -42,6 +42,17 @@ class DemandaEmpresaCreate(BaseModel):
     aceita_contato: Optional[bool] = None
 
 
+class CancelamentoEmpresaRequest(BaseModel):
+    """Motivo e observação enviados pela empresa ao cancelar a demanda.
+
+    O motivo é obrigatório e validado contra ``MOTIVOS_CANCELAMENTO``; a
+    observação é livre e sempre opcional.
+    """
+
+    motivo: str
+    observacao: Optional[str] = None
+
+
 class ProjetoUpdate(BaseModel):
     status: Optional[StatusProjeto] = None
     complexidade: Optional[Nivel] = None
@@ -72,6 +83,9 @@ class ProjetoResponse(BaseModel):
     briefing_resultado: Optional[str]
     categoria_id: Optional[int]
     empresa_id: int
+    cancelamento_motivo: Optional[str] = None
+    cancelamento_observacao: Optional[str] = None
+    cancelado_em: Optional[datetime] = None
     criado_em: datetime
     atualizado_em: Optional[datetime]
 

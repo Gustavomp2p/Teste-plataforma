@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.sql import func
 
 from app.database import get_db
 from app.deps.admin import UserContext, get_current_empresa
 from app.models.empresa import Empresa
-from app.models.projeto import Projeto, StatusProjeto
+from app.models.projeto import MOTIVOS_CANCELAMENTO, Projeto, StatusProjeto
 from app.schemas.empresa import EmpresaResponse
 from app.schemas.projeto import (
+    CancelamentoEmpresaRequest,
     DemandaEmpresaCreate,
     ProjetoDetalheResponse,
     ProjetoResponse,
@@ -151,10 +153,23 @@ def buscar_projeto_empresa(
 @router.patch("/me/projetos/{projeto_id}/cancelar", response_model=ProjetoResponse)
 def cancelar_demanda_empresa(
     projeto_id: int,
+    dados: CancelamentoEmpresaRequest,
     user: UserContext = Depends(get_current_empresa),
     db: Session = Depends(get_db),
 ):
-    """Cancela uma demanda da propria empresa."""
+    """Cancela uma demanda da propria empresa, registrando o motivo.
+
+    O motivo e obrigatorio e precisa estar em MOTIVOS_CANCELAMENTO; a
+    observacao e livre e opcional.
+    """
+    motivo = (dados.motivo or "").strip()
+    if not motivo:
+        raise HTTPException(status_code=400, detail="Selecione o motivo do cancelamento.")
+    if motivo not in MOTIVOS_CANCELAMENTO:
+        raise HTTPException(status_code=400, detail="Motivo de cancelamento inválido.")
+
+    observacao = (dados.observacao or "").strip() or None
+
     empresa_id = _empresa_id_da_conta(user, db)
     if not empresa_id:
         raise HTTPException(status_code=404, detail="Empresa nao vinculada a esta conta.")
@@ -177,6 +192,9 @@ def cancelar_demanda_empresa(
         )
 
     projeto.status = StatusProjeto.cancelado.value
+    projeto.cancelamento_motivo = motivo
+    projeto.cancelamento_observacao = observacao
+    projeto.cancelado_em = func.now()
     db.commit()
     db.refresh(projeto)
     return _sem_observacoes(projeto)

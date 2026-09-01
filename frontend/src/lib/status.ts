@@ -38,6 +38,16 @@ export const STATUS_CANCELAVEIS_EMPRESA: StatusProjeto[] = [
   "reprovado",
 ];
 
+/** Espelha MOTIVOS_CANCELAMENTO em backend/app/models/projeto.py. */
+export const MOTIVOS_CANCELAMENTO = [
+  "Resolvido internamente",
+  "Sem orçamento no momento",
+  "Não é mais prioridade",
+  "Prazo não atende",
+  "Cadastrei por engano / duplicada",
+  "Outro",
+] as const;
+
 export function empresaPodeCancelar(status: StatusProjeto | string): boolean {
   return STATUS_CANCELAVEIS_EMPRESA.includes(status as StatusProjeto);
 }

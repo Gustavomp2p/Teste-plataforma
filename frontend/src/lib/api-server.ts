@@ -17,6 +17,7 @@ import {
   buscarEmpresaVinculada as buscarEmpresaVinculadaBase,
   criarDemandaEmpresa as criarDemandaEmpresaBase,
   cancelarDemandaEmpresa as cancelarDemandaEmpresaBase,
+  type CancelamentoInput,
   type DemandaEmpresaInput,
   type ProjetoFiltros,
   type DemandaFiltros,
@@ -76,8 +77,8 @@ export async function criarDemandaEmpresa(data: DemandaEmpresaInput) {
   return criarDemandaEmpresaBase(data, await token());
 }
 
-export async function cancelarDemandaEmpresa(id: number) {
-  return cancelarDemandaEmpresaBase(id, await token());
+export async function cancelarDemandaEmpresa(id: number, dados: CancelamentoInput) {
+  return cancelarDemandaEmpresaBase(id, dados, await token());
 }
 
 export async function listarDemandasDisponiveis(filtros: DemandaFiltros = {}) {

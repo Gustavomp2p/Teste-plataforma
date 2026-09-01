@@ -52,6 +52,9 @@ export type Projeto = {
   briefing_resultado: string | null;
   categoria_id: number | null;
   empresa_id: number;
+  cancelamento_motivo: string | null;
+  cancelamento_observacao: string | null;
+  cancelado_em: string | null;
   criado_em: string;
   atualizado_em: string | null;
 };
@@ -312,9 +315,19 @@ export function criarDemandaEmpresa(data: DemandaEmpresaInput, accessToken?: str
   });
 }
 
-export function cancelarDemandaEmpresa(id: number, accessToken?: string | null) {
+export type CancelamentoInput = {
+  motivo: string;
+  observacao?: string | null;
+};
+
+export function cancelarDemandaEmpresa(
+  id: number,
+  dados: CancelamentoInput,
+  accessToken?: string | null,
+) {
   return request<Projeto>(`/empresa/me/projetos/${id}/cancelar`, {
     method: "PATCH",
+    body: dados,
     auth: true,
     accessToken,
   });
