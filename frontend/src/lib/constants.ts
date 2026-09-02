@@ -16,7 +16,7 @@ export const NAV_LINKS = [
 
 /** Links institucionais exibidos apenas no rodapé. */
 export const NAV_SECUNDARIO = [
-  { href: "/tutorial", label: "Tutorial de utilização" },
+  { href: "/tutorial", label: "Guia rápido de utilização" },
   { href: "/creditos", label: "Créditos do projeto" },
 ] as const;
 

@@ -1,79 +1,51 @@
-/** Conteúdo do "Tutorial de Utilização — Plataforma BFD" (documento oficial).
- *  O PDF completo fica em /public/tutorial e é servido em TUTORIAL_PDF. */
+/** Conteúdo do "Guia Rápido — Plataforma BFD" (documento oficial).
+ *  O PDF completo fica em /public/tutorial e é servido em TUTORIAL_PDF.
+ *  Para publicar uma versão nova, sobrescreva o arquivo e ajuste as seções
+ *  abaixo se a estrutura do documento mudar. */
 
-export const TUTORIAL_PDF = "/tutorial/tutorial-utilizacao-plataforma.pdf";
+export const TUTORIAL_PDF = "/tutorial/guia-rapido-plataforma-bfd.pdf";
 
 export const TUTORIAL = {
-  titulo: "Tutorial de Utilização — Plataforma BFD",
+  titulo: "Guia Rápido — Plataforma BFD",
   descricao:
-    "Documento oficial de uso da Plataforma BFD (Bolsa Futuro Digital). Descreve o que já está implementado e disponível na versão atual da plataforma, servindo como guia para o usuário final.",
+    "Guia oficial de utilização da Plataforma BFD (Bolsa Futuro Digital). Em três páginas, cobre a criação de conta, o cadastro e acompanhamento de desafios pelas empresas e a consulta de demandas pelos usuários.",
 } as const;
 
 export const TUTORIAL_SECOES = [
   {
     numero: "1",
-    titulo: "Apresentação",
+    titulo: "Primeiros passos",
     resumo:
-      "O que é a Plataforma BFD, para quem foi criada (Empresa, Usuário e Administrador) e qual problema ela resolve.",
+      "Como criar sua conta, escolher o tipo certo e entrar na plataforma.",
+    topicos: [
+      "Criar conta em 5 passos",
+      "Escolher entre conta Empresa e Usuário",
+      "Fazer login e recuperar a senha",
+      "Para qual painel cada conta é direcionada",
+    ],
   },
   {
     numero: "2",
-    titulo: "Acesso à Plataforma",
+    titulo: "Para empresas",
     resumo:
-      "Como acessar pelo navegador, o que a página inicial apresenta e como usar o menu principal.",
+      "Como cadastrar um desafio e acompanhar o andamento da demanda.",
+    topicos: [
+      "Dados da empresa e do desafio",
+      "Enviar a demanda para qualificação",
+      "Acompanhar em “Suas demandas”",
+      "O que significa cada status",
+    ],
   },
   {
     numero: "3",
-    titulo: "Criação de Conta",
+    titulo: "Para usuários",
     resumo:
-      "Campos solicitados, escolha entre conta Usuário e Empresa, regras de senha e o que acontece após o cadastro.",
-  },
-  {
-    numero: "4",
-    titulo: "Login",
-    resumo:
-      "Entrar por e-mail e senha ou com Google, recuperar a senha e para qual painel cada tipo de conta é direcionado.",
-  },
-  {
-    numero: "5",
-    titulo: "Cadastro de uma Demanda/Desafio",
-    resumo:
-      "Formulário completo: dados da empresa, responsável, contato, segmento, tipo de problema, descrição e urgência.",
-  },
-  {
-    numero: "6",
-    titulo: "Acompanhamento",
-    resumo:
-      "Como a empresa acompanha suas demandas, como o usuário consulta o catálogo e o significado de cada status.",
-  },
-  {
-    numero: "7",
-    titulo: "Soluções",
-    resumo:
-      "As 5 áreas de atuação do programa: Dashboard, Automação, Inteligência Artificial, Talentos e Impacto.",
-  },
-  {
-    numero: "8",
-    titulo: "Dashboard (Painel Administrativo)",
-    resumo:
-      "Visão consolidada de demandas, empresas e projetos — uso exclusivo da equipe do programa.",
-  },
-  {
-    numero: "9",
-    titulo: "Dúvidas e Orientações",
-    resumo:
-      "O que fazer quando não consegue acessar, quando uma demanda não aparece e o que cada mensagem de erro significa.",
-  },
-  {
-    numero: "10",
-    titulo: "Fluxo Resumido",
-    resumo:
-      "Do cadastro de conta ao acompanhamento, em um diagrama único de ponta a ponta.",
-  },
-  {
-    numero: "11",
-    titulo: "Observações",
-    resumo:
-      "Funcionalidades pendentes ou em validação identificadas na versão atual da plataforma.",
+      "Como consultar as demandas disponíveis, conhecer as soluções e resolver dúvidas.",
+    topicos: [
+      "Consultar o catálogo de demandas",
+      "Quando uma demanda aparece",
+      "As 5 áreas de solução do programa",
+      "Dúvidas frequentes de acesso",
+    ],
   },
 ] as const;
