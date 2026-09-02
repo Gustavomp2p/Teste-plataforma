@@ -23,7 +23,7 @@ export function FlowSection() {
           </ButtonLink>
         </div>
         <p className="mt-2 text-sm text-slate-500">
-          Tutorial completo de utilização da plataforma, passo a passo.
+          Guia rápido de utilização da plataforma, passo a passo.
         </p>
         <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {FLOW_STEPS.map((step, index) => (
