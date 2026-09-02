@@ -98,6 +98,36 @@ export default async function ProjetoDetalhePage({ params }: PageProps) {
             </section>
           </div>
 
+          {projeto.cancelamento_motivo && (
+            <section className="rounded-xl border border-red-200 bg-red-50 p-6">
+              <h2 className="text-lg font-semibold text-red-900">
+                Cancelada pela empresa
+              </h2>
+              <dl className="mt-4 space-y-3 text-sm">
+                <div>
+                  <dt className="text-red-500">Motivo</dt>
+                  <dd className="mt-1 font-medium text-red-900">
+                    {projeto.cancelamento_motivo}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-red-500">Observação da empresa</dt>
+                  <dd className="mt-1 whitespace-pre-line text-red-900">
+                    {projeto.cancelamento_observacao ?? "Nenhuma observação informada."}
+                  </dd>
+                </div>
+                {projeto.cancelado_em && (
+                  <div>
+                    <dt className="text-red-500">Cancelada em</dt>
+                    <dd className="mt-1 text-red-900">
+                      {new Date(projeto.cancelado_em).toLocaleString("pt-BR")}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+          )}
+
           <ProjetoQualificacaoForm projeto={projeto} />
         </div>
       </>

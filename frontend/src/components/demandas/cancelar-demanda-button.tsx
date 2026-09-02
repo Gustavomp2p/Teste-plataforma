@@ -195,12 +195,7 @@ export function CancelarDemandaButton({ demandaId, titulo, compacto = false }: P
                 <Button type="button" variant="secondary" onClick={fechar} disabled={enviando}>
                   Voltar
                 </Button>
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  disabled={enviando}
-                  className="border-red-200 bg-red-600 text-white hover:bg-red-500"
-                >
+                <Button type="submit" variant="danger" disabled={enviando}>
                   {enviando ? "Cancelando..." : "Confirmar cancelamento"}
                 </Button>
               </div>
