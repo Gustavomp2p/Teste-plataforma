@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "danger";
 
 const variants: Record<Variant, string> = {
   primary:
@@ -9,6 +9,10 @@ const variants: Record<Variant, string> = {
   secondary:
     "border border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
   ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+  // Acoes destrutivas. Precisa ser variante, e nao className por cima de
+  // "secondary": as duas regras tem a mesma especificidade e o bg/text da
+  // variante vencia, deixando texto branco sobre fundo branco.
+  danger: "bg-red-600 text-white hover:bg-red-500 shadow-sm shadow-red-600/25",
 };
 
 type ButtonProps = ComponentPropsWithoutRef<"button"> & {
